@@ -1,0 +1,1033 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PrepTracker Pro</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        /* PURE DARK THEME WITH UI ANIMATIONS */
+        :root {
+            --bg-color: #0b1120;
+            --card-bg: #151d30;
+            --card-border: #2a374e;
+            --neon-green: #00ff87;
+            --neon-blue: #38bdf8;
+            --neon-red: #ff4b4b;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --input-bg: #0f172a;
+            --nav-bg: #0f172a;
+            --sidebar-bg: #0f172a;
+            --card-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+            --transition-smooth: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0; padding: 0;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+        }
+
+        /* NAVBAR */
+        .navbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 16px;
+            background: var(--nav-bg);
+            border-bottom: 1px solid var(--card-border);
+            box-shadow: var(--card-shadow);
+            position: sticky; top: 0; z-index: 100;
+        }
+
+        .nav-left { display: flex; align-items: center; gap: 12px; }
+
+        .menu-btn {
+            background: transparent; border: none;
+            color: var(--text-main); font-size: 1.5rem; cursor: pointer;
+            transition: var(--transition-smooth);
+        }
+        .menu-btn:active { transform: scale(0.9); }
+
+        .brand-title {
+            font-size: 1.15rem; font-weight: 800;
+            background: linear-gradient(135deg, var(--neon-blue), var(--neon-green));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+
+        .nav-right-controls { display: flex; align-items: center; gap: 10px; }
+
+        .streak-badge {
+            display: flex; align-items: center; gap: 4px;
+            padding: 6px 14px; border-radius: 20px;
+            font-weight: 800; font-size: 0.8rem; cursor: pointer;
+            transition: var(--transition-smooth);
+        }
+        .streak-badge:active { transform: scale(0.95); }
+
+        .streak-badge.add-mode {
+            background: rgba(0, 255, 136, 0.1);
+            border: 1px solid var(--neon-green);
+            color: var(--neon-green);
+        }
+
+        .streak-badge.rev-mode {
+            background: rgba(56, 189, 248, 0.1);
+            border: 1px solid var(--neon-blue);
+            color: var(--neon-blue);
+        }
+
+        /* SIDEBAR / DRAWER MENU */
+        .sidebar-overlay {
+            position: fixed; inset: 0; background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(4px); z-index: 200; opacity: 0;
+            pointer-events: none; transition: opacity 0.3s ease;
+        }
+        .sidebar-overlay.active { opacity: 1; pointer-events: auto; }
+
+        .sidebar {
+            position: fixed; top: 0; left: -280px; width: 280px; height: 100%;
+            background: var(--sidebar-bg); border-right: 1px solid var(--card-border);
+            box-shadow: var(--card-shadow); z-index: 201; padding: 25px 20px; 
+            transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+            display: flex; flex-direction: column;
+        }
+        .sidebar.active { transform: translateX(280px); }
+
+        .sidebar-links { list-style: none; margin-top: 20px; }
+        .sidebar-links li { margin-bottom: 8px; }
+        .sidebar-links a {
+            color: var(--text-main); text-decoration: none; font-weight: 700;
+            display: flex; align-items: center; gap: 12px; font-size: 0.9rem;
+            padding: 12px 14px; border-radius: 12px; transition: var(--transition-smooth);
+        }
+        .sidebar-links a:hover { background: rgba(255, 255, 255, 0.06); color: var(--neon-blue); transform: translateX(4px); }
+
+        .sidebar-icon-svg { width: 20px; height: 20px; fill: currentColor; flex-shrink: 0; }
+        .sidebar-divider { height: 1px; background: var(--text-muted); opacity: 0.2; margin: 15px 0; }
+
+        /* MAIN CONTAINER */
+        .container {
+            max-width: 600px; width: 100%; margin: 20px auto;
+            padding: 0 16px; flex: 1;
+        }
+
+        /* SLIDER CARD */
+        .slider-card-wrapper {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            box-shadow: var(--card-shadow);
+            border-radius: 18px; overflow: hidden; margin-bottom: 25px; touch-action: pan-y;
+        }
+
+        .card-tabs {
+            display: flex; border-bottom: 1px solid var(--card-border);
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        .tab-btn {
+            flex: 1; padding: 14px; background: transparent; border: none;
+            color: var(--text-muted); font-weight: 800; font-size: 0.85rem;
+            cursor: pointer; transition: var(--transition-smooth);
+        }
+
+        .tab-btn.active.add-tab {
+            color: var(--neon-green); background: rgba(0, 255, 136, 0.08);
+            border-bottom: 2px solid var(--neon-green);
+        }
+
+        .tab-btn.active.rev-tab {
+            color: var(--neon-blue); background: rgba(56, 189, 248, 0.08);
+            border-bottom: 2px solid var(--neon-blue);
+        }
+
+        .slider-content { display: flex; width: 200%; transition: transform 0.4s ease; }
+        .slide-panel { width: 50%; padding: 20px; }
+
+        .form-group { margin-bottom: 14px; }
+        label {
+            display: block; margin-bottom: 6px; font-size: 0.75rem;
+            font-weight: 800; color: var(--text-muted); text-transform: uppercase;
+        }
+
+        input, select, textarea {
+            width: 100%; padding: 12px; background: var(--input-bg);
+            border: 1px solid var(--card-border); border-radius: 10px;
+            color: var(--text-main); font-size: 0.9rem; outline: none; font-weight: 600;
+            transition: var(--transition-smooth);
+        }
+
+        textarea { resize: none; overflow-y: hidden; min-height: 48px; line-height: 1.4; }
+
+        input:focus, select:focus, textarea:focus {
+            border-color: var(--neon-blue);
+            box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.15);
+        }
+
+        .btn-neon {
+            width: 100%; background: linear-gradient(135deg, var(--neon-blue), #00b862);
+            color: #05100a; border: none; padding: 12px; border-radius: 10px;
+            font-weight: 800; cursor: pointer; transition: var(--transition-smooth);
+        }
+        .btn-neon:hover { opacity: 0.95; transform: translateY(-1px); }
+        .btn-neon:active { transform: translateY(1px) scale(0.99); }
+
+        /* SUBJECT GRID */
+        .section-title {
+            font-size: 0.85rem; font-weight: 800; color: var(--text-muted);
+            margin-bottom: 12px; text-transform: uppercase;
+        }
+
+        .subject-grid {
+            display: grid; grid-template-columns: repeat(3, 1fr);
+            gap: 12px; margin-bottom: 25px;
+        }
+
+        .subject-card-btn {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            box-shadow: var(--card-shadow);
+            border-radius: 14px; padding: 18px 10px; text-align: center; cursor: pointer;
+            transition: var(--transition-smooth);
+        }
+        .subject-card-btn:hover {
+            border-color: var(--neon-blue);
+            transform: translateY(-3px);
+        }
+        .subject-card-btn:active { transform: scale(0.96); }
+
+        .sub-icon { font-size: 1.5rem; margin-bottom: 6px; }
+        .sub-name { font-size: 0.85rem; font-weight: 800; }
+
+        /* REVISION CARD */
+        .revision-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            box-shadow: var(--card-shadow);
+            border-radius: 14px; padding: 14px 16px; margin-bottom: 12px;
+            display: flex; align-items: center; justify-content: space-between; gap: 12px;
+            transition: var(--transition-smooth);
+        }
+
+        .revision-card.late { border-color: var(--neon-red); }
+
+        .revision-info { flex: 1; }
+        .revision-title { font-weight: 800; font-size: 0.95rem; margin-bottom: 3px; }
+        .revision-topics { font-size: 0.82rem; color: var(--text-muted); }
+        .revision-date { font-size: 0.7rem; color: var(--text-muted); margin-top: 4px; font-weight: 700; }
+
+        .circle-check-btn {
+            width: 34px; height: 34px; border-radius: 50%;
+            border: 2px solid var(--neon-blue); background: transparent; cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            flex-shrink: 0; color: transparent; font-weight: 900; transition: var(--transition-smooth);
+        }
+
+        .circle-check-btn.checked {
+            background: var(--neon-green); border-color: var(--neon-green);
+            color: #05100a; transform: scale(1.08);
+        }
+        .circle-check-btn.late-btn { border-color: var(--neon-red); }
+
+        .late-badge {
+            font-size: 0.65rem; font-weight: 800; background: rgba(255, 75, 75, 0.15);
+            color: var(--neon-red); border: 1px solid var(--neon-red);
+            padding: 2px 6px; border-radius: 10px; margin-left: 6px;
+        }
+
+        /* FULLSCREEN PAGES */
+        .fullscreen-page {
+            position: fixed; inset: 0; background: var(--bg-color);
+            z-index: 250; padding: 20px; overflow-y: auto;
+            display: none; flex-direction: column; opacity: 0;
+            transition: opacity 0.25s ease-out;
+        }
+        .fullscreen-page.active { display: flex; opacity: 1; }
+
+        .fullscreen-header {
+            display: flex; align-items: center; justify-content: space-between;
+            padding-bottom: 16px; border-bottom: 1px solid var(--card-border);
+            margin-bottom: 20px;
+        }
+
+        .back-btn {
+            background: var(--card-bg); border: 1px solid var(--card-border);
+            color: var(--text-main); padding: 8px 16px; border-radius: 20px;
+            font-weight: 800; cursor: pointer; font-size: 0.85rem;
+            transition: var(--transition-smooth);
+        }
+        .back-btn:active { transform: scale(0.92); }
+
+        .sub-nav-tabs { display: flex; gap: 8px; margin-bottom: 20px; overflow-x: auto; }
+
+        .sub-tab-btn {
+            padding: 8px 14px; background: var(--card-bg);
+            border: 1px solid var(--card-border); border-radius: 20px;
+            color: var(--text-muted); font-size: 0.78rem; font-weight: 800;
+            cursor: pointer; white-space: nowrap; transition: var(--transition-smooth);
+        }
+
+        .sub-tab-btn.active {
+            background: rgba(56, 189, 248, 0.15); color: var(--neon-blue);
+            border-color: var(--neon-blue);
+        }
+
+        .chapter-card-item {
+            background: var(--card-bg); border: 1px solid var(--card-border);
+            box-shadow: var(--card-shadow);
+            border-radius: 14px; padding: 16px; margin-bottom: 12px;
+            cursor: pointer; display: flex; justify-content: space-between;
+            align-items: center; font-weight: 800; font-size: 0.95rem;
+            user-select: none; transition: var(--transition-smooth);
+        }
+        .chapter-card-item:hover { transform: translateY(-2px); border-color: var(--neon-blue); }
+        .chapter-card-item:active { transform: scale(0.98); }
+
+        .topic-log-card {
+            background: var(--card-bg); border: 1px solid var(--card-border);
+            box-shadow: var(--card-shadow);
+            border-radius: 14px; padding: 16px; margin-bottom: 12px;
+            user-select: none; cursor: pointer; transition: var(--transition-smooth);
+        }
+        .topic-log-card:hover { transform: translateY(-2px); border-color: var(--neon-blue); }
+        .topic-log-card:active { transform: scale(0.98); }
+
+        /* MODALS & POPUPS ANIMATED */
+        .modal-overlay {
+            position: fixed; inset: 0; background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(6px); z-index: 300; display: flex;
+            align-items: center; justify-content: center; padding: 20px;
+            opacity: 0; pointer-events: none; transition: opacity 0.25s ease;
+        }
+        .modal-overlay.active { opacity: 1; pointer-events: auto; }
+
+        .modal-body {
+            background: var(--sidebar-bg); border: 1px solid var(--card-border);
+            box-shadow: var(--card-shadow);
+            border-radius: 18px; width: 100%; max-width: 420px; padding: 22px;
+            transform: scale(0.9); transition: transform 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .modal-overlay.active .modal-body { transform: scale(1); }
+
+        .popup-title { font-size: 1.1rem; font-weight: 800; color: var(--neon-blue); margin-bottom: 8px; }
+        .popup-desc { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 18px; line-height: 1.4; font-weight: 600; }
+
+        .popup-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 15px; }
+        .popup-btn {
+            padding: 10px 18px; border-radius: 10px; font-weight: 800;
+            font-size: 0.85rem; border: none; cursor: pointer;
+            transition: var(--transition-smooth);
+        }
+        .popup-btn:active { transform: scale(0.94); }
+
+        .popup-btn.cancel { background: rgba(255,255,255,0.08); color: var(--text-muted); }
+        .popup-btn.delete { background: var(--neon-red); color: white; }
+        .popup-btn.edit { background: var(--neon-blue); color: #05100a; }
+
+        .custom-toast {
+            position: fixed; bottom: 30px; left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: var(--sidebar-bg); border: 1px solid var(--neon-blue);
+            box-shadow: var(--card-shadow); color: var(--text-main);
+            padding: 12px 24px; border-radius: 30px; font-weight: 800;
+            font-size: 0.85rem; z-index: 400; transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .custom-toast.show { transform: translateX(-50%) translateY(0); }
+
+        /* FOOTER & SOCIAL ICONS */
+        footer {
+            text-align: center; padding: 22px 20px; border-top: 1px solid var(--card-border);
+            margin-top: auto; background: var(--nav-bg);
+        }
+
+        .social-links { display: flex; justify-content: center; gap: 16px; margin-bottom: 12px; }
+
+        .social-icon {
+            display: inline-flex; align-items: center; justify-content: center;
+            width: 40px; height: 40px; border-radius: 50%;
+            background: var(--card-bg); border: 1px solid var(--card-border);
+            transition: var(--transition-smooth); text-decoration: none;
+        }
+        .social-icon:hover { transform: translateY(-3px); }
+        .social-icon svg { width: 20px; height: 20px; fill: currentColor; }
+        
+        .social-icon.wa { color: #25D366; }
+        .social-icon.wa:hover { background: #25D366; color: #000; }
+
+        .social-icon.yt { color: #FF0000; }
+        .social-icon.yt:hover { background: #FF0000; color: #fff; }
+
+        .social-icon.site { color: var(--neon-blue); }
+        .social-icon.site:hover { background: var(--neon-blue); color: #000; }
+
+        .footer-credit { font-size: 0.85rem; color: var(--text-muted); font-weight: 600; }
+        .portfolio-link { color: var(--neon-blue); text-decoration: none; font-weight: 800; }
+        .portfolio-link:hover { text-decoration: underline; color: var(--neon-green); }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="nav-left">
+            <button class="menu-btn" onclick="toggleSidebar()">☰</button>
+            <div class="brand-title">REVISION CENTRE</div>
+        </div>
+
+        <div class="nav-right-controls">
+            <div class="streak-badge add-mode" id="streakBadge" onclick="openStreakModal()">
+                ⚡ <span id="streakDisplayVal">0</span> Days
+            </div>
+        </div>
+    </nav>
+
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+    <div class="sidebar" id="sidebar">
+        <h3 style="color:var(--neon-blue); font-size: 1.1rem; font-weight:800;">⚡ Navigation Menu</h3>
+        <ul class="sidebar-links">
+            <li><a href="#" onclick="toggleSidebar()">🏠 Home</a></li>
+            <li><a href="#" onclick="openSubjectPage('Physics'); toggleSidebar();">⚛️ Physics</a></li>
+            <li><a href="#" onclick="openSubjectPage('Chemistry'); toggleSidebar();">🧪 Chemistry</a></li>
+            <li><a href="#" onclick="openSubjectPage('Maths'); toggleSidebar();">📐 Maths</a></li>
+            
+            <div class="sidebar-divider"></div>
+            
+            <li>
+                <a href="https://wa.me/919278351830?text=Hello!" target="_blank" style="color:#25D366;">
+                    <svg class="sidebar-icon-svg" viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/></svg>
+                    WhatsApp
+                </a>
+            </li>
+            <li>
+                <a href="https://www.youtube.com/@projectwithpriyanshu" target="_blank" style="color:#FF0000;">
+                    <svg class="sidebar-icon-svg" viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+                    YouTube
+                </a>
+            </li>
+            <li>
+                <a href="https://Priyanshusingh.pages.dev" target="_blank" style="color:var(--neon-blue);">
+                    <svg class="sidebar-icon-svg" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
+                    Official Website
+                </a>
+            </li>
+        </ul>
+    </div>
+
+    <div class="container">
+        
+        <div class="slider-card-wrapper" id="sliderWrapper">
+            <div class="card-tabs">
+                <button class="tab-btn active add-tab" id="tabAdd" onclick="switchTab('add')">➕ Add Topic</button>
+                <button class="tab-btn rev-tab" id="tabRev" onclick="switchTab('rev')">🔔 Revise Today</button>
+            </div>
+
+            <div class="slider-content" id="sliderContent">
+                <div class="slide-panel">
+                    <form id="studyForm">
+                        <div class="form-group">
+                            <label>Subject</label>
+                            <select id="subject" required>
+                                <option value="Physics">Physics</option>
+                                <option value="Chemistry (PC)">Chemistry - PC (Physical)</option>
+                                <option value="Chemistry (OC)">Chemistry - OC (Organic)</option>
+                                <option value="Chemistry (IOC)">Chemistry - IOC (Inorganic)</option>
+                                <option value="Maths">Maths</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Chapter Name</label>
+                            <input type="text" id="chapter" placeholder="e.g. Chemical Bonding" list="chapterSuggestions" required autocomplete="off">
+                            <datalist id="chapterSuggestions"></datalist>
+                        </div>
+                        <div class="form-group">
+                            <label>Topics Covered Today</label>
+                            <textarea id="topics" placeholder="e.g. VSEPR Theory, Hybridization..." required oninput="autoResizeTextarea(this)"></textarea>
+                        </div>
+                        <button type="submit" class="btn-neon">✨ Save Topic</button>
+                    </form>
+                </div>
+
+                <div class="slide-panel">
+                    <div id="revisionList"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section-title">Subjects</div>
+        <div class="subject-grid">
+            <div class="subject-card-btn" onclick="openSubjectPage('Physics')">
+                <div class="sub-icon">⚛️</div>
+                <div class="sub-name">Physics</div>
+            </div>
+            <div class="subject-card-btn" onclick="openSubjectPage('Chemistry')">
+                <div class="sub-icon">🧪</div>
+                <div class="sub-name">Chemistry</div>
+            </div>
+            <div class="subject-card-btn" onclick="openSubjectPage('Maths')">
+                <div class="sub-icon">📐</div>
+                <div class="sub-name">Maths</div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="fullscreen-page" id="subjectPage">
+        <div class="fullscreen-header">
+            <button class="back-btn" onclick="closeSubjectPage()">← Back</button>
+            <h2 id="subjectTitle" style="font-size:1.2rem; color:var(--neon-blue); font-weight:800;">Subject</h2>
+            <div></div>
+        </div>
+
+        <div class="sub-nav-tabs" id="chemSubTabs" style="display:none;">
+            <button class="sub-tab-btn active" id="chemTabAll" onclick="switchChemSub('All')">All Chem</button>
+            <button class="sub-tab-btn" id="chemTabPC" onclick="switchChemSub('PC')">PC (Physical)</button>
+            <button class="sub-tab-btn" id="chemTabOC" onclick="switchChemSub('OC')">OC (Organic)</button>
+            <button class="sub-tab-btn" id="chemTabIOC" onclick="switchChemSub('IOC')">IOC (Inorganic)</button>
+        </div>
+
+        <div id="subjectChapterList"></div>
+    </div>
+
+    <div class="fullscreen-page" id="chapterPage" style="z-index:260;">
+        <div class="fullscreen-header">
+            <button class="back-btn" onclick="closeChapterPage()">← Back to Subject</button>
+            <h2 id="chapterTitle" style="font-size:1.1rem; color:var(--neon-blue); font-weight:800;">Chapter Topics</h2>
+            <div></div>
+        </div>
+        <div id="chapterTopicList"></div>
+    </div>
+
+    <div class="modal-overlay" id="actionModal">
+        <div class="modal-body">
+            <div class="popup-title" id="actionModalTitle">Manage Item</div>
+            <div class="popup-desc" id="actionModalDesc">What do you want to do with this item?</div>
+            <div class="popup-actions">
+                <button class="popup-btn cancel" onclick="closeModal('actionModal')">Cancel</button>
+                <button class="popup-btn edit" id="btnActionEdit">✏️ Edit</button>
+                <button class="popup-btn delete" id="btnActionDelete">🗑️ Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="editModal">
+        <div class="modal-body">
+            <div class="popup-title">✏️ Edit Details</div>
+            <div class="form-group" style="margin-top:12px;">
+                <label id="editModalLabel">Name</label>
+                <input type="text" id="editInputVal" autocomplete="off" />
+            </div>
+            <div class="popup-actions">
+                <button class="popup-btn cancel" onclick="closeModal('editModal')">Cancel</button>
+                <button class="popup-btn edit" id="btnSaveEdit">💾 Save Changes</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="confirmModal">
+        <div class="modal-body">
+            <div class="popup-title" style="color:var(--neon-red);">⚠️ Confirm Delete</div>
+            <div class="popup-desc" id="confirmDeleteDesc">Do you really want to delete this item?</div>
+            <div class="popup-actions">
+                <button class="popup-btn cancel" onclick="closeModal('confirmModal')">Keep It</button>
+                <button class="popup-btn delete" id="btnConfirmDelete">Yes, Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="streakModal" onclick="closeModalOnOuter(event, 'streakModal')">
+        <div class="modal-body">
+            <div class="popup-title">🔥 Daily Study Streaks</div>
+            <div style="background:rgba(0, 255, 136, 0.08); border:1px solid var(--neon-green); padding:12px; border-radius:12px; margin-bottom:12px;">
+                <div style="color:var(--neon-green); font-weight:800; font-size:0.9rem;">🟢 Study Log Streak</div>
+                <div style="font-size:1.2rem; font-weight:800; margin:4px 0;"><span id="addStreakVal">0</span> Days</div>
+                <div style="font-size:0.75rem; color:var(--text-muted); font-weight:600;">Increase this streak by adding study topics daily.</div>
+            </div>
+            <div style="background:rgba(56, 189, 248, 0.08); border:1px solid var(--neon-blue); padding:12px; border-radius:12px;">
+                <div style="color:var(--neon-blue); font-weight:800; font-size:0.9rem;">🔵 Revision Streak</div>
+                <div style="font-size:1.2rem; font-weight:800; margin:4px 0;"><span id="revStreakVal">0</span> Days</div>
+                <div style="font-size:0.75rem; color:var(--text-muted); font-weight:600;">Increase this streak by completing your daily revisions.</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="custom-toast" id="customToast">Done!</div>
+
+    <footer>
+        <div class="social-links">
+            <a href="https://wa.me/919278351830?text=Hello!" target="_blank" class="social-icon wa" title="WhatsApp">
+                <svg viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/></svg>
+            </a>
+            <a href="https://www.youtube.com/@projectwithpriyanshu" target="_blank" class="social-icon yt" title="YouTube">
+                <svg viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+            </a>
+            <a href="https://Priyanshusingh.pages.dev" target="_blank" class="social-icon site" title="Official Website">
+                <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
+            </a>
+        </div>
+        <div class="footer-credit">
+            Built with ❤️ by <a href="https://Priyanshusingh.pages.dev" target="_blank" class="portfolio-link">PRIYANSHU SINGH</a>
+        </div>
+    </footer>
+
+<script>
+    const STORAGE_KEY = 'preptracker_main_user_data';
+    const STREAK_KEY = 'preptracker_main_user_streaks';
+
+    let currentTab = 'add';
+    let currentActiveSubject = '';
+    let currentChemSub = 'All';
+    let activeSelectedChapter = '';
+    let selectedItemForAction = null;
+
+    function autoResizeTextarea(element) {
+        element.style.height = 'auto';
+        element.style.height = (element.scrollHeight) + 'px';
+    }
+
+    function getFormattedDate(dateObj) {
+        return dateObj.toISOString().split('T')[0];
+    }
+
+    function addDays(dateStr, days) {
+        let date = new Date(dateStr);
+        date.setDate(date.getDate() + days);
+        return getFormattedDate(date);
+    }
+
+    function showToast(msg) {
+        const toast = document.getElementById('customToast');
+        toast.innerText = msg;
+        toast.classList.add('show');
+        setTimeout(() => toast.classList.remove('show'), 3000);
+    }
+
+    function toggleSidebar() {
+        document.getElementById('sidebar').classList.toggle('active');
+        document.getElementById('sidebarOverlay').classList.toggle('active');
+    }
+
+    function switchTab(tab) {
+        currentTab = tab;
+        const sliderContent = document.getElementById('sliderContent');
+        const tabAdd = document.getElementById('tabAdd');
+        const tabRev = document.getElementById('tabRev');
+        const streakBadge = document.getElementById('streakBadge');
+
+        if (tab === 'add') {
+            sliderContent.style.transform = 'translateX(0%)';
+            tabAdd.classList.add('active');
+            tabRev.classList.remove('active');
+            streakBadge.className = 'streak-badge add-mode';
+        } else {
+            sliderContent.style.transform = 'translateX(-50%)';
+            tabRev.classList.add('active');
+            tabAdd.classList.remove('active');
+            streakBadge.className = 'streak-badge rev-mode';
+        }
+        renderStreakBadge();
+    }
+
+    // SWIPE DETECT
+    let touchStartX = 0;
+    const sliderWrapper = document.getElementById('sliderWrapper');
+    sliderWrapper.addEventListener('touchstart', e => { touchStartX = e.changedTouches[0].screenX; }, false);
+    sliderWrapper.addEventListener('touchend', e => {
+        let touchEndX = e.changedTouches[0].screenX;
+        if (touchStartX - touchEndX > 50) switchTab('rev');
+        if (touchEndX - touchStartX > 50) switchTab('add');
+    }, false);
+
+    // SAVE TOPIC
+    document.getElementById('studyForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        const subject = document.getElementById('subject').value;
+        const chapter = document.getElementById('chapter').value.trim();
+        const topicsInput = document.getElementById('topics');
+        const topics = topicsInput.value.trim();
+        const today = getFormattedDate(new Date());
+
+        let logs = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+
+        const newLog = {
+            id: Date.now(),
+            subject: subject,
+            chapter: chapter,
+            topics: topics,
+            dateAdded: today,
+            revisionDates: [
+                addDays(today, 1),
+                addDays(today, 4),
+                addDays(today, 7),
+                addDays(today, 21)
+            ],
+            revisedDates: []
+        };
+
+        logs.push(newLog);
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(logs));
+
+        triggerStreakUpdate('add');
+        showToast("Topic saved successfully! 🚀");
+        document.getElementById('studyForm').reset();
+        topicsInput.style.height = 'auto';
+        loadRevisions();
+        updateSuggestions();
+    });
+
+    function updateSuggestions() {
+        const logs = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+        const chaptersList = [...new Set(logs.map(l => l.chapter))];
+        const datalist = document.getElementById('chapterSuggestions');
+        datalist.innerHTML = '';
+        chaptersList.forEach(ch => {
+            const opt = document.createElement('option');
+            opt.value = ch;
+            datalist.appendChild(opt);
+        });
+    }
+
+    // SUBJECT PAGE
+    function openSubjectPage(subj) {
+        currentActiveSubject = subj;
+        document.getElementById('subjectTitle').innerText = subj + " View";
+        const chemTabs = document.getElementById('chemSubTabs');
+        
+        if (subj === 'Chemistry') {
+            chemTabs.style.display = 'flex';
+            switchChemSub('All');
+        } else {
+            chemTabs.style.display = 'none';
+            renderSubjectChapters();
+        }
+
+        document.getElementById('subjectPage').classList.add('active');
+    }
+
+    function closeSubjectPage() {
+        document.getElementById('subjectPage').classList.remove('active');
+    }
+
+    function switchChemSub(subType) {
+        currentChemSub = subType;
+        const buttons = document.querySelectorAll('.sub-tab-btn');
+        buttons.forEach(btn => btn.classList.remove('active'));
+        
+        if (subType === 'All') document.getElementById('chemTabAll').classList.add('active');
+        if (subType === 'PC') document.getElementById('chemTabPC').classList.add('active');
+        if (subType === 'OC') document.getElementById('chemTabOC').classList.add('active');
+        if (subType === 'IOC') document.getElementById('chemTabIOC').classList.add('active');
+
+        renderSubjectChapters();
+    }
+
+    function renderSubjectChapters() {
+        const logs = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+        const container = document.getElementById('subjectChapterList');
+        container.innerHTML = '';
+
+        let filtered = logs.filter(l => {
+            if (currentActiveSubject === 'Chemistry') {
+                if (currentChemSub === 'All') return l.subject.startsWith('Chemistry');
+                return l.subject.trim() === `Chemistry (${currentChemSub})`.trim();
+            }
+            return l.subject.trim() === currentActiveSubject.trim();
+        });
+
+        if (filtered.length === 0) {
+            container.innerHTML = '<div style="text-align:center; color:var(--text-muted); padding:30px; font-weight:700;">No chapters found.</div>';
+            return;
+        }
+
+        const chaptersList = [...new Set(filtered.map(item => item.chapter))];
+
+        chaptersList.forEach(chName => {
+            const count = filtered.filter(f => f.chapter === chName).length;
+            const chapCard = document.createElement('div');
+            chapCard.className = 'chapter-card-item';
+            chapCard.innerHTML = `
+                <span>📖 ${chName}</span>
+                <span style="font-size:0.75rem; color:var(--neon-blue);">${count} Topics ›</span>
+            `;
+
+            chapCard.onclick = () => openChapterPage(chName);
+            setupContextTrigger(chapCard, { chapter: chName, isChapterGroup: true });
+
+            container.appendChild(chapCard);
+        });
+    }
+
+    function openChapterPage(chName) {
+        activeSelectedChapter = chName;
+        document.getElementById('chapterTitle').innerText = chName;
+        renderChapterTopics();
+        document.getElementById('chapterPage').classList.add('active');
+    }
+
+    function renderChapterTopics() {
+        const logs = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+        const container = document.getElementById('chapterTopicList');
+        container.innerHTML = '';
+
+        const topicsList = logs.filter(l => l.chapter === activeSelectedChapter);
+
+        if(topicsList.length === 0) {
+            closeChapterPage();
+            renderSubjectChapters();
+            return;
+        }
+
+        topicsList.slice().reverse().forEach(log => {
+            const card = document.createElement('div');
+            card.className = 'topic-log-card';
+            card.innerHTML = `
+                <div style="font-weight:800; font-size:0.95rem; color:var(--neon-blue); margin-bottom:4px;">${log.topics}</div>
+                <div style="font-size:0.75rem; color:var(--text-muted); font-weight:600;">Added On: ${log.dateAdded}</div>
+            `;
+
+            setupContextTrigger(card, { ...log, isChapterGroup: false });
+            container.appendChild(card);
+        });
+    }
+
+    function closeChapterPage() {
+        document.getElementById('chapterPage').classList.remove('active');
+    }
+
+    function setupContextTrigger(element, itemData) {
+        let timer = null;
+        element.oncontextmenu = function(e) {
+            e.preventDefault();
+            triggerActionPopup(itemData);
+        };
+        element.ontouchstart = function() {
+            timer = setTimeout(() => triggerActionPopup(itemData), 500);
+        };
+        element.ontouchend = function() { clearTimeout(timer); };
+        element.ontouchmove = function() { clearTimeout(timer); };
+    }
+
+    function triggerActionPopup(itemData) {
+        selectedItemForAction = itemData;
+        document.getElementById('actionModalTitle').innerText = itemData.isChapterGroup ? itemData.chapter : "Manage Topic";
+        document.getElementById('actionModalDesc').innerText = itemData.isChapterGroup 
+            ? `Do you want to edit or delete all topics under chapter "${itemData.chapter}"?`
+            : `Topic: "${itemData.topics}"\nSelect an action:`;
+
+        document.getElementById('btnActionEdit').onclick = function() {
+            closeModal('actionModal');
+            openEditModal(itemData);
+        };
+
+        document.getElementById('btnActionDelete').onclick = function() {
+            closeModal('actionModal');
+            document.getElementById('confirmDeleteDesc').innerText = itemData.isChapterGroup
+                ? `Delete entire chapter "${itemData.chapter}" and all its topics?`
+                : `Delete only topic "${itemData.topics}"?`;
+            openModal('confirmModal');
+        };
+
+        openModal('actionModal');
+    }
+
+    // IN-PLACE EDIT POPUP LOGIC
+    function openEditModal(itemData) {
+        const input = document.getElementById('editInputVal');
+        const label = document.getElementById('editModalLabel');
+
+        if (itemData.isChapterGroup) {
+            label.innerText = "Chapter Name";
+            input.value = itemData.chapter;
+        } else {
+            label.innerText = "Topic Name";
+            input.value = itemData.topics;
+        }
+
+        document.getElementById('btnSaveEdit').onclick = function() {
+            const newVal = input.value.trim();
+            if (!newVal) return;
+
+            let logs = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+
+            if (itemData.isChapterGroup) {
+                // Edit Chapter name for all matching topics
+                logs = logs.map(l => {
+                    if (l.chapter === itemData.chapter) {
+                        l.chapter = newVal;
+                    }
+                    return l;
+                });
+                activeSelectedChapter = newVal;
+            } else {
+                // Edit specific topic name
+                logs = logs.map(l => {
+                    if (l.id === itemData.id) {
+                        l.topics = newVal;
+                    }
+                    return l;
+                });
+            }
+
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(logs));
+            closeModal('editModal');
+            showToast("Updated successfully! ✏️");
+            
+            renderSubjectChapters();
+            if(document.getElementById('chapterPage').classList.contains('active')) {
+                renderChapterTopics();
+            }
+            loadRevisions();
+            updateSuggestions();
+        };
+
+        openModal('editModal');
+    }
+
+    // CONFIRM DELETE ACTION
+    document.getElementById('btnConfirmDelete').onclick = function() {
+        if (selectedItemForAction) {
+            let logs = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+            
+            if (selectedItemForAction.isChapterGroup) {
+                // Delete Entire Chapter
+                logs = logs.filter(l => l.chapter !== selectedItemForAction.chapter);
+            } else {
+                // Delete ONLY Specific Topic by ID
+                logs = logs.filter(l => l.id !== selectedItemForAction.id);
+            }
+
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(logs));
+            closeModal('confirmModal');
+            showToast("Deleted successfully! 🗑️");
+            
+            renderSubjectChapters();
+            if(document.getElementById('chapterPage').classList.contains('active')) {
+                renderChapterTopics();
+            }
+            loadRevisions();
+            updateSuggestions();
+        }
+    };
+
+    function loadRevisions() {
+        const logs = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+        const today = getFormattedDate(new Date());
+        const container = document.getElementById('revisionList');
+        
+        container.innerHTML = '';
+        let dueList = [];
+
+        logs.forEach(log => {
+            log.revisionDates.forEach(revDate => {
+                if (revDate <= today && !log.revisedDates?.includes(revDate)) {
+                    dueList.push({ ...log, currentRevDate: revDate, isLate: revDate < today });
+                }
+            });
+        });
+
+        if (dueList.length === 0) {
+            container.innerHTML = '<div style="text-align:center; color:var(--text-muted); padding:30px; font-size:0.85rem; font-weight:700;">🎉 No revisions due for today!</div>';
+            return;
+        }
+
+        dueList.forEach(item => {
+            const card = document.createElement('div');
+            card.className = `revision-card ${item.isLate ? 'late' : ''}`;
+            
+            card.innerHTML = `
+                <div class="revision-info">
+                    <div style="font-size:0.7rem; color:var(--text-muted); text-transform:uppercase; font-weight:800;">${item.subject}</div>
+                    <div class="revision-title">${item.chapter} ${item.isLate ? '<span class="late-badge">⚠️ Overdue</span>' : ''}</div>
+                    <div class="revision-topics">${item.topics}</div>
+                    <div class="revision-date">Due Date: ${item.currentRevDate}</div>
+                </div>
+                <button class="circle-check-btn ${item.isLate ? 'late-btn' : ''}" onclick="toggleReviseCheck(this, ${item.id}, '${item.currentRevDate}')">
+                    ✓
+                </button>
+            `;
+            container.appendChild(card);
+        });
+    }
+
+    function toggleReviseCheck(btn, id, revDate) {
+        btn.classList.add('checked');
+        let logs = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+        logs = logs.map(l => {
+            if (l.id === id) {
+                if (!l.revisedDates) l.revisedDates = [];
+                l.revisedDates.push(revDate);
+            }
+            return l;
+        });
+
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(logs));
+        triggerStreakUpdate('rev');
+        showToast("Marked as Revised! 🟢");
+
+        setTimeout(() => loadRevisions(), 400);
+    }
+
+    function triggerStreakUpdate(type) {
+        const today = getFormattedDate(new Date());
+        let streaks = JSON.parse(localStorage.getItem(STREAK_KEY)) || {
+            add: { count: 0, lastDate: "" },
+            rev: { count: 0, lastDate: "" }
+        };
+
+        let target = streaks[type];
+        if (target.lastDate !== today) {
+            if (target.lastDate === addDays(today, -1)) {
+                target.count += 1;
+            } else {
+                target.count = 1;
+            }
+            target.lastDate = today;
+            localStorage.setItem(STREAK_KEY, JSON.stringify(streaks));
+        }
+        renderStreakBadge();
+    }
+
+    function renderStreakBadge() {
+        const today = getFormattedDate(new Date());
+        let streaks = JSON.parse(localStorage.getItem(STREAK_KEY)) || {
+            add: { count: 0, lastDate: "" },
+            rev: { count: 0, lastDate: "" }
+        };
+
+        ['add', 'rev'].forEach(k => {
+            if (streaks[k].lastDate && streaks[k].lastDate !== today && streaks[k].lastDate !== addDays(today, -1)) {
+                streaks[k].count = 0;
+            }
+        });
+
+        localStorage.setItem(STREAK_KEY, JSON.stringify(streaks));
+
+        const activeVal = currentTab === 'add' ? streaks.add.count : streaks.rev.count;
+        document.getElementById('streakDisplayVal').innerText = activeVal;
+        document.getElementById('addStreakVal').innerText = streaks.add.count;
+        document.getElementById('revStreakVal').innerText = streaks.rev.count;
+    }
+
+    function openStreakModal() { openModal('streakModal'); }
+    function openModal(id) { document.getElementById(id).classList.add('active'); }
+    function closeModal(id) { document.getElementById(id).classList.remove('active'); }
+    function closeModalOnOuter(e, id) { if (e.target.id === id) closeModal(id); }
+
+    window.onload = function() {
+        renderStreakBadge();
+        loadRevisions();
+        updateSuggestions();
+    };
+</script>
+</body>
+</html>
