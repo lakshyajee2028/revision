@@ -3,16 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PrepTracker Pro</title>
+    <title>PrepTracker Pro - Revision Centre</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* PURE DARK THEME WITH UI ANIMATIONS */
         :root {
             --bg-color: #0b1120;
             --card-bg: #151d30;
             --card-border: #2a374e;
             --neon-green: #00ff87;
             --neon-blue: #38bdf8;
+            --neon-purple: #9d4edd;
             --neon-red: #ff4b4b;
             --text-main: #f8fafc;
             --text-muted: #94a3b8;
@@ -39,7 +40,6 @@
             overflow-x: hidden;
         }
 
-        /* NAVBAR */
         .navbar {
             display: flex;
             align-items: center;
@@ -48,20 +48,23 @@
             background: var(--nav-bg);
             border-bottom: 1px solid var(--card-border);
             box-shadow: var(--card-shadow);
-            position: sticky; top: 0; z-index: 100;
+            position: sticky; top: 0;
+            z-index: 100;
         }
 
         .nav-left { display: flex; align-items: center; gap: 12px; }
 
         .menu-btn {
-            background: transparent; border: none;
+            background: transparent;
+            border: none;
             color: var(--text-main); font-size: 1.5rem; cursor: pointer;
             transition: var(--transition-smooth);
         }
         .menu-btn:active { transform: scale(0.9); }
 
         .brand-title {
-            font-size: 1.15rem; font-weight: 800;
+            font-size: 1.15rem;
+            font-weight: 800;
             background: linear-gradient(135deg, var(--neon-blue), var(--neon-green));
             -webkit-background-clip: text; -webkit-text-fill-color: transparent;
         }
@@ -69,7 +72,8 @@
         .nav-right-controls { display: flex; align-items: center; gap: 10px; }
 
         .streak-badge {
-            display: flex; align-items: center; gap: 4px;
+            display: flex;
+            align-items: center; gap: 4px;
             padding: 6px 14px; border-radius: 20px;
             font-weight: 800; font-size: 0.8rem; cursor: pointer;
             transition: var(--transition-smooth);
@@ -88,18 +92,20 @@
             color: var(--neon-blue);
         }
 
-        /* SIDEBAR / DRAWER MENU */
         .sidebar-overlay {
-            position: fixed; inset: 0; background: rgba(0, 0, 0, 0.7);
+            position: fixed;
+            inset: 0; background: rgba(0, 0, 0, 0.7);
             backdrop-filter: blur(4px); z-index: 200; opacity: 0;
             pointer-events: none; transition: opacity 0.3s ease;
         }
         .sidebar-overlay.active { opacity: 1; pointer-events: auto; }
 
         .sidebar {
-            position: fixed; top: 0; left: -280px; width: 280px; height: 100%;
+            position: fixed;
+            top: 0; left: -280px; width: 280px; height: 100%;
             background: var(--sidebar-bg); border-right: 1px solid var(--card-border);
-            box-shadow: var(--card-shadow); z-index: 201; padding: 25px 20px; 
+            box-shadow: var(--card-shadow); z-index: 201;
+            padding: 25px 20px; 
             transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
             display: flex; flex-direction: column;
         }
@@ -108,7 +114,8 @@
         .sidebar-links { list-style: none; margin-top: 20px; }
         .sidebar-links li { margin-bottom: 8px; }
         .sidebar-links a {
-            color: var(--text-main); text-decoration: none; font-weight: 700;
+            color: var(--text-main);
+            text-decoration: none; font-weight: 700;
             display: flex; align-items: center; gap: 12px; font-size: 0.9rem;
             padding: 12px 14px; border-radius: 12px; transition: var(--transition-smooth);
         }
@@ -117,13 +124,135 @@
         .sidebar-icon-svg { width: 20px; height: 20px; fill: currentColor; flex-shrink: 0; }
         .sidebar-divider { height: 1px; background: var(--text-muted); opacity: 0.2; margin: 15px 0; }
 
-        /* MAIN CONTAINER */
         .container {
-            max-width: 600px; width: 100%; margin: 20px auto;
+            max-width: 600px;
+            width: 100%; margin: 20px auto;
             padding: 0 16px; flex: 1;
         }
 
-        /* SLIDER CARD */
+        .dashboard-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            box-shadow: var(--card-shadow);
+            border-radius: 18px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .dashboard-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
+        }
+
+        .circle-box {
+            position: relative;
+            width: 100px;
+            height: 100px;
+            flex-shrink: 0;
+        }
+
+        .circle-box svg {
+            width: 100px;
+            height: 100px;
+            transform: rotate(-90deg);
+        }
+
+        .circle-box circle {
+            fill: none;
+            stroke-width: 8;
+            stroke-linecap: round;
+        }
+
+        .circle-bg { stroke: rgba(255, 255, 255, 0.08); }
+
+        .circle-bar {
+            stroke: var(--neon-green);
+            stroke-dasharray: 283;
+            stroke-dashoffset: 283;
+            transition: stroke-dashoffset 0.8s ease;
+        }
+
+        .circle-text {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+        }
+
+        .circle-text .percent {
+            font-size: 1.1rem;
+            font-weight: 800;
+            color: #fff;
+        }
+
+        .circle-text .label {
+            font-size: 0.55rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            font-weight: 700;
+        }
+
+        .stats-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            width: 100%;
+        }
+
+        .stat-box {
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            padding: 8px 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 0.8rem;
+            font-weight: 700;
+        }
+
+        .stat-box span {
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .stat-box i { color: var(--neon-blue); }
+
+        .subjects-progress {
+            margin-top: 15px;
+            padding-top: 12px;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .subj-item { margin-bottom: 10px; }
+
+        .subj-header {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.78rem;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .subj-bar-bg {
+            height: 6px;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .subj-bar-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, var(--neon-blue), var(--neon-green));
+            border-radius: 10px;
+            transition: width 0.6s ease;
+        }
+
         .slider-card-wrapper {
             background: var(--card-bg);
             border: 1px solid var(--card-border);
@@ -132,23 +261,27 @@
         }
 
         .card-tabs {
-            display: flex; border-bottom: 1px solid var(--card-border);
+            display: flex;
+            border-bottom: 1px solid var(--card-border);
             background: rgba(0, 0, 0, 0.2);
         }
 
         .tab-btn {
-            flex: 1; padding: 14px; background: transparent; border: none;
+            flex: 1;
+            padding: 14px; background: transparent; border: none;
             color: var(--text-muted); font-weight: 800; font-size: 0.85rem;
             cursor: pointer; transition: var(--transition-smooth);
         }
 
         .tab-btn.active.add-tab {
-            color: var(--neon-green); background: rgba(0, 255, 136, 0.08);
+            color: var(--neon-green);
+            background: rgba(0, 255, 136, 0.08);
             border-bottom: 2px solid var(--neon-green);
         }
 
         .tab-btn.active.rev-tab {
-            color: var(--neon-blue); background: rgba(56, 189, 248, 0.08);
+            color: var(--neon-blue);
+            background: rgba(56, 189, 248, 0.08);
             border-bottom: 2px solid var(--neon-blue);
         }
 
@@ -157,12 +290,14 @@
 
         .form-group { margin-bottom: 14px; }
         label {
-            display: block; margin-bottom: 6px; font-size: 0.75rem;
+            display: block;
+            margin-bottom: 6px; font-size: 0.75rem;
             font-weight: 800; color: var(--text-muted); text-transform: uppercase;
         }
 
         input, select, textarea {
-            width: 100%; padding: 12px; background: var(--input-bg);
+            width: 100%;
+            padding: 12px; background: var(--input-bg);
             border: 1px solid var(--card-border); border-radius: 10px;
             color: var(--text-main); font-size: 0.9rem; outline: none; font-weight: 600;
             transition: var(--transition-smooth);
@@ -176,21 +311,23 @@
         }
 
         .btn-neon {
-            width: 100%; background: linear-gradient(135deg, var(--neon-blue), #00b862);
+            width: 100%;
+            background: linear-gradient(135deg, var(--neon-blue), #00b862);
             color: #05100a; border: none; padding: 12px; border-radius: 10px;
             font-weight: 800; cursor: pointer; transition: var(--transition-smooth);
         }
         .btn-neon:hover { opacity: 0.95; transform: translateY(-1px); }
         .btn-neon:active { transform: translateY(1px) scale(0.99); }
 
-        /* SUBJECT GRID */
         .section-title {
-            font-size: 0.85rem; font-weight: 800; color: var(--text-muted);
+            font-size: 0.85rem;
+            font-weight: 800; color: var(--text-muted);
             margin-bottom: 12px; text-transform: uppercase;
         }
 
         .subject-grid {
-            display: grid; grid-template-columns: repeat(3, 1fr);
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
             gap: 12px; margin-bottom: 25px;
         }
 
@@ -201,23 +338,19 @@
             border-radius: 14px; padding: 18px 10px; text-align: center; cursor: pointer;
             transition: var(--transition-smooth);
         }
-        .subject-card-btn:hover {
-            border-color: var(--neon-blue);
-            transform: translateY(-3px);
-        }
+        .subject-card-btn:hover { border-color: var(--neon-blue); transform: translateY(-3px); }
         .subject-card-btn:active { transform: scale(0.96); }
 
         .sub-icon { font-size: 1.5rem; margin-bottom: 6px; }
         .sub-name { font-size: 0.85rem; font-weight: 800; }
 
-        /* REVISION CARD */
         .revision-card {
             background: var(--card-bg);
             border: 1px solid var(--card-border);
             box-shadow: var(--card-shadow);
             border-radius: 14px; padding: 14px 16px; margin-bottom: 12px;
-            display: flex; align-items: center; justify-content: space-between; gap: 12px;
-            transition: var(--transition-smooth);
+            display: flex; align-items: center; justify-content: space-between;
+            gap: 12px; transition: var(--transition-smooth);
         }
 
         .revision-card.late { border-color: var(--neon-red); }
@@ -230,12 +363,13 @@
         .circle-check-btn {
             width: 34px; height: 34px; border-radius: 50%;
             border: 2px solid var(--neon-blue); background: transparent; cursor: pointer;
-            display: flex; align-items: center; justify-content: center;
-            flex-shrink: 0; color: transparent; font-weight: 900; transition: var(--transition-smooth);
+            display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+            color: transparent; font-weight: 900; transition: var(--transition-smooth);
         }
 
         .circle-check-btn.checked {
-            background: var(--neon-green); border-color: var(--neon-green);
+            background: var(--neon-green);
+            border-color: var(--neon-green);
             color: #05100a; transform: scale(1.08);
         }
         .circle-check-btn.late-btn { border-color: var(--neon-red); }
@@ -246,9 +380,9 @@
             padding: 2px 6px; border-radius: 10px; margin-left: 6px;
         }
 
-        /* FULLSCREEN PAGES */
         .fullscreen-page {
-            position: fixed; inset: 0; background: var(--bg-color);
+            position: fixed;
+            inset: 0; background: var(--bg-color);
             z-index: 250; padding: 20px; overflow-y: auto;
             display: none; flex-direction: column; opacity: 0;
             transition: opacity 0.25s ease-out;
@@ -256,13 +390,15 @@
         .fullscreen-page.active { display: flex; opacity: 1; }
 
         .fullscreen-header {
-            display: flex; align-items: center; justify-content: space-between;
+            display: flex;
+            align-items: center; justify-content: space-between;
             padding-bottom: 16px; border-bottom: 1px solid var(--card-border);
             margin-bottom: 20px;
         }
 
         .back-btn {
-            background: var(--card-bg); border: 1px solid var(--card-border);
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
             color: var(--text-main); padding: 8px 16px; border-radius: 20px;
             font-weight: 800; cursor: pointer; font-size: 0.85rem;
             transition: var(--transition-smooth);
@@ -272,30 +408,35 @@
         .sub-nav-tabs { display: flex; gap: 8px; margin-bottom: 20px; overflow-x: auto; }
 
         .sub-tab-btn {
-            padding: 8px 14px; background: var(--card-bg);
+            padding: 8px 14px;
+            background: var(--card-bg);
             border: 1px solid var(--card-border); border-radius: 20px;
             color: var(--text-muted); font-size: 0.78rem; font-weight: 800;
             cursor: pointer; white-space: nowrap; transition: var(--transition-smooth);
         }
 
         .sub-tab-btn.active {
-            background: rgba(56, 189, 248, 0.15); color: var(--neon-blue);
+            background: rgba(56, 189, 248, 0.15);
+            color: var(--neon-blue);
             border-color: var(--neon-blue);
         }
 
         .chapter-card-item {
-            background: var(--card-bg); border: 1px solid var(--card-border);
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
             box-shadow: var(--card-shadow);
             border-radius: 14px; padding: 16px; margin-bottom: 12px;
             cursor: pointer; display: flex; justify-content: space-between;
-            align-items: center; font-weight: 800; font-size: 0.95rem;
+            align-items: center;
+            font-weight: 800; font-size: 0.95rem;
             user-select: none; transition: var(--transition-smooth);
         }
         .chapter-card-item:hover { transform: translateY(-2px); border-color: var(--neon-blue); }
         .chapter-card-item:active { transform: scale(0.98); }
 
         .topic-log-card {
-            background: var(--card-bg); border: 1px solid var(--card-border);
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
             box-shadow: var(--card-shadow);
             border-radius: 14px; padding: 16px; margin-bottom: 12px;
             user-select: none; cursor: pointer; transition: var(--transition-smooth);
@@ -303,9 +444,9 @@
         .topic-log-card:hover { transform: translateY(-2px); border-color: var(--neon-blue); }
         .topic-log-card:active { transform: scale(0.98); }
 
-        /* MODALS & POPUPS ANIMATED */
         .modal-overlay {
-            position: fixed; inset: 0; background: rgba(0, 0, 0, 0.8);
+            position: fixed;
+            inset: 0; background: rgba(0, 0, 0, 0.8);
             backdrop-filter: blur(6px); z-index: 300; display: flex;
             align-items: center; justify-content: center; padding: 20px;
             opacity: 0; pointer-events: none; transition: opacity 0.25s ease;
@@ -313,10 +454,12 @@
         .modal-overlay.active { opacity: 1; pointer-events: auto; }
 
         .modal-body {
-            background: var(--sidebar-bg); border: 1px solid var(--card-border);
+            background: var(--sidebar-bg);
+            border: 1px solid var(--card-border);
             box-shadow: var(--card-shadow);
             border-radius: 18px; width: 100%; max-width: 420px; padding: 22px;
-            transform: scale(0.9); transition: transform 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transform: scale(0.9);
+            transition: transform 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
         .modal-overlay.active .modal-body { transform: scale(1); }
 
@@ -325,7 +468,8 @@
 
         .popup-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 15px; }
         .popup-btn {
-            padding: 10px 18px; border-radius: 10px; font-weight: 800;
+            padding: 10px 18px;
+            border-radius: 10px; font-weight: 800;
             font-size: 0.85rem; border: none; cursor: pointer;
             transition: var(--transition-smooth);
         }
@@ -336,25 +480,28 @@
         .popup-btn.edit { background: var(--neon-blue); color: #05100a; }
 
         .custom-toast {
-            position: fixed; bottom: 30px; left: 50%;
+            position: fixed;
+            bottom: 30px; left: 50%;
             transform: translateX(-50%) translateY(100px);
             background: var(--sidebar-bg); border: 1px solid var(--neon-blue);
             box-shadow: var(--card-shadow); color: var(--text-main);
-            padding: 12px 24px; border-radius: 30px; font-weight: 800;
+            padding: 12px 24px;
+            border-radius: 30px; font-weight: 800;
             font-size: 0.85rem; z-index: 400; transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
         .custom-toast.show { transform: translateX(-50%) translateY(0); }
 
-        /* FOOTER & SOCIAL ICONS */
         footer {
-            text-align: center; padding: 22px 20px; border-top: 1px solid var(--card-border);
+            text-align: center;
+            padding: 22px 20px; border-top: 1px solid var(--card-border);
             margin-top: auto; background: var(--nav-bg);
         }
 
         .social-links { display: flex; justify-content: center; gap: 16px; margin-bottom: 12px; }
 
         .social-icon {
-            display: inline-flex; align-items: center; justify-content: center;
+            display: inline-flex;
+            align-items: center; justify-content: center;
             width: 40px; height: 40px; border-radius: 50%;
             background: var(--card-bg); border: 1px solid var(--card-border);
             transition: var(--transition-smooth); text-decoration: none;
@@ -424,11 +571,64 @@
     </div>
 
     <div class="container">
-        
-        <div class="slider-card-wrapper" id="sliderWrapper">
+        <div class="dashboard-card">
+            <div class="dashboard-top">
+                <div class="circle-box">
+                    <svg>
+                        <circle class="circle-bg" cx="50" cy="50" r="40"></circle>
+                        <circle class="circle-bar" id="progressCircle" cx="50" cy="50" r="40"></circle>
+                    </svg>
+                    <div class="circle-text">
+                        <div class="percent" id="overallPercent">0%</div>
+                        <div class="label">Today's Rev</div>
+                    </div>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-box">
+                        <span><i class="fa-solid fa-list-check"></i> Due Today</span>
+                        <b id="statTotal">0</b>
+                    </div>
+                    <div class="stat-box">
+                        <span><i class="fa-solid fa-circle-check" style="color:var(--neon-green);"></i> Done Today</span>
+                        <b id="statDone" style="color:var(--neon-green);">0</b>
+                    </div>
+                    <div class="stat-box">
+                        <span><i class="fa-solid fa-clock-rotate-left" style="color:var(--neon-red);"></i> Overdue</span>
+                        <b id="statPending" style="color:var(--neon-red);">0</b>
+                    </div>
+                </div>
+            </div>
+
+            <div class="subjects-progress">
+                <div class="subj-item">
+                    <div class="subj-header">
+                        <span>⚛️ Physics (Due/Done)</span>
+                        <span id="phyRatio">0/0</span>
+                    </div>
+                    <div class="subj-bar-bg"><div class="subj-bar-fill" id="phyBar"></div></div>
+                </div>
+                <div class="subj-item">
+                    <div class="subj-header">
+                        <span>🧪 Chemistry (Due/Done)</span>
+                        <span id="chemRatio">0/0</span>
+                    </div>
+                    <div class="subj-bar-bg"><div class="subj-bar-fill" id="chemBar"></div></div>
+                </div>
+                <div class="subj-item">
+                    <div class="subj-header">
+                        <span>📐 Maths (Due/Done)</span>
+                        <span id="mathRatio">0/0</span>
+                    </div>
+                    <div class="subj-bar-bg"><div class="subj-bar-fill" id="mathBar"></div></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="slider-card-wrapper">
             <div class="card-tabs">
-                <button class="tab-btn active add-tab" id="tabAdd" onclick="switchTab('add')">➕ Add Topic</button>
-                <button class="tab-btn rev-tab" id="tabRev" onclick="switchTab('rev')">🔔 Revise Today</button>
+                <button class="tab-btn active add-tab" id="addTabBtn" onclick="switchTab('add')">➕ Log Today's Study</button>
+                <button class="tab-btn rev-tab" id="revTabBtn" onclick="switchTab('rev')">🔔 Today's Revisions</button>
             </div>
 
             <div class="slider-content" id="sliderContent">
@@ -436,24 +636,24 @@
                     <form id="studyForm">
                         <div class="form-group">
                             <label>Subject</label>
-                            <select id="subject" required>
+                            <select id="subject" required onchange="handleSubjectChange()">
                                 <option value="Physics">Physics</option>
-                                <option value="Chemistry (PC)">Chemistry - PC (Physical)</option>
-                                <option value="Chemistry (OC)">Chemistry - OC (Organic)</option>
-                                <option value="Chemistry (IOC)">Chemistry - IOC (Inorganic)</option>
+                                <option value="Chemistry-PC">Chemistry - Physical (PC)</option>
+                                <option value="Chemistry-OC">Chemistry - Organic (OC)</option>
+                                <option value="Chemistry-IOC">Chemistry - Inorganic (IOC)</option>
                                 <option value="Maths">Maths</option>
                             </select>
                         </div>
                         <div class="form-group">
                             <label>Chapter Name</label>
-                            <input type="text" id="chapter" placeholder="e.g. Chemical Bonding" list="chapterSuggestions" required autocomplete="off">
+                            <input type="text" id="chapter" placeholder="e.g. Thermodynamics" required autocomplete="off" list="chapterSuggestions" />
                             <datalist id="chapterSuggestions"></datalist>
                         </div>
                         <div class="form-group">
-                            <label>Topics Covered Today</label>
-                            <textarea id="topics" placeholder="e.g. VSEPR Theory, Hybridization..." required oninput="autoResizeTextarea(this)"></textarea>
+                            <label>Topics / Key Notes</label>
+                            <textarea id="topics" placeholder="Enter topics studied today..." required oninput="autoGrowTextarea(this)"></textarea>
                         </div>
-                        <button type="submit" class="btn-neon">✨ Save Topic</button>
+                        <button type="submit" class="btn-neon">🚀 Save Study Log</button>
                     </form>
                 </div>
 
@@ -463,7 +663,7 @@
             </div>
         </div>
 
-        <div class="section-title">Subjects</div>
+        <div class="section-title">📚 Subject Repositories</div>
         <div class="subject-grid">
             <div class="subject-card-btn" onclick="openSubjectPage('Physics')">
                 <div class="sub-icon">⚛️</div>
@@ -478,23 +678,20 @@
                 <div class="sub-name">Maths</div>
             </div>
         </div>
-
     </div>
 
     <div class="fullscreen-page" id="subjectPage">
         <div class="fullscreen-header">
-            <button class="back-btn" onclick="closeSubjectPage()">← Back</button>
-            <h2 id="subjectTitle" style="font-size:1.2rem; color:var(--neon-blue); font-weight:800;">Subject</h2>
+            <button class="back-btn" onclick="closeSubjectPage()">← Back to Home</button>
+            <h2 id="subjectTitle" style="font-size:1.1rem; color:var(--neon-blue); font-weight:800;">Subject Chapters</h2>
             <div></div>
         </div>
-
         <div class="sub-nav-tabs" id="chemSubTabs" style="display:none;">
             <button class="sub-tab-btn active" id="chemTabAll" onclick="switchChemSub('All')">All Chem</button>
             <button class="sub-tab-btn" id="chemTabPC" onclick="switchChemSub('PC')">PC (Physical)</button>
             <button class="sub-tab-btn" id="chemTabOC" onclick="switchChemSub('OC')">OC (Organic)</button>
             <button class="sub-tab-btn" id="chemTabIOC" onclick="switchChemSub('IOC')">IOC (Inorganic)</button>
         </div>
-
         <div id="subjectChapterList"></div>
     </div>
 
@@ -507,7 +704,7 @@
         <div id="chapterTopicList"></div>
     </div>
 
-    <div class="modal-overlay" id="actionModal">
+    <div class="modal-overlay" id="actionModal" onclick="closeModalOnOuter(event, 'actionModal')">
         <div class="modal-body">
             <div class="popup-title" id="actionModalTitle">Manage Item</div>
             <div class="popup-desc" id="actionModalDesc">What do you want to do with this item?</div>
@@ -519,9 +716,9 @@
         </div>
     </div>
 
-    <div class="modal-overlay" id="editModal">
+    <div class="modal-overlay" id="editModal" onclick="closeModalOnOuter(event, 'editModal')">
         <div class="modal-body">
-            <div class="popup-title">✏️ Edit Details</div>
+            <div class="popup-title" id="editModalTitle">✏️ Edit Details</div>
             <div class="form-group" style="margin-top:12px;">
                 <label id="editModalLabel">Name</label>
                 <input type="text" id="editInputVal" autocomplete="off" />
@@ -533,7 +730,7 @@
         </div>
     </div>
 
-    <div class="modal-overlay" id="confirmModal">
+    <div class="modal-overlay" id="confirmModal" onclick="closeModalOnOuter(event, 'confirmModal')">
         <div class="modal-body">
             <div class="popup-title" style="color:var(--neon-red);">⚠️ Confirm Delete</div>
             <div class="popup-desc" id="confirmDeleteDesc">Do you really want to delete this item?</div>
@@ -546,21 +743,27 @@
 
     <div class="modal-overlay" id="streakModal" onclick="closeModalOnOuter(event, 'streakModal')">
         <div class="modal-body">
-            <div class="popup-title">🔥 Daily Study Streaks</div>
-            <div style="background:rgba(0, 255, 136, 0.08); border:1px solid var(--neon-green); padding:12px; border-radius:12px; margin-bottom:12px;">
-                <div style="color:var(--neon-green); font-weight:800; font-size:0.9rem;">🟢 Study Log Streak</div>
-                <div style="font-size:1.2rem; font-weight:800; margin:4px 0;"><span id="addStreakVal">0</span> Days</div>
-                <div style="font-size:0.75rem; color:var(--text-muted); font-weight:600;">Increase this streak by adding study topics daily.</div>
+            <div class="popup-title">⚡ Active Streaks</div>
+            <div class="popup-desc">
+                Log consecutive study or revision days to maintain your streak!
+                <div style="margin-top:14px; display:flex; flex-direction:column; gap:8px;">
+                    <div class="stat-box">
+                        <span>➕ Adding Streak</span>
+                        <b style="color:var(--neon-green);" id="addStreakVal">0 Days</b>
+                    </div>
+                    <div class="stat-box">
+                        <span>🔔 Revision Streak</span>
+                        <b style="color:var(--neon-blue);" id="revStreakVal">0 Days</b>
+                    </div>
+                </div>
             </div>
-            <div style="background:rgba(56, 189, 248, 0.08); border:1px solid var(--neon-blue); padding:12px; border-radius:12px;">
-                <div style="color:var(--neon-blue); font-weight:800; font-size:0.9rem;">🔵 Revision Streak</div>
-                <div style="font-size:1.2rem; font-weight:800; margin:4px 0;"><span id="revStreakVal">0</span> Days</div>
-                <div style="font-size:0.75rem; color:var(--text-muted); font-weight:600;">Increase this streak by completing your daily revisions.</div>
+            <div class="popup-actions">
+                <button class="popup-btn edit" onclick="closeModal('streakModal')">Awesome!</button>
             </div>
         </div>
     </div>
 
-    <div class="custom-toast" id="customToast">Done!</div>
+    <div class="custom-toast" id="customToast"></div>
 
     <footer>
         <div class="social-links">
@@ -570,422 +773,83 @@
             <a href="https://www.youtube.com/@projectwithpriyanshu" target="_blank" class="social-icon yt" title="YouTube">
                 <svg viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
             </a>
-            <a href="https://Priyanshusingh.pages.dev" target="_blank" class="social-icon site" title="Official Website">
+            <a href="https://Priyanshusingh.pages.dev" target="_blank" class="social-icon site" title="Website">
                 <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
             </a>
         </div>
-        <div class="footer-credit">
-            Built with ❤️ by <a href="https://Priyanshusingh.pages.dev" target="_blank" class="portfolio-link">PRIYANSHU SINGH</a>
-        </div>
+        <div class="footer-credit">Developed by <a href="https://Priyanshusingh.pages.dev" target="_blank" class="portfolio-link">Priyanshu Singh</a></div>
     </footer>
 
-<script>
-    const STORAGE_KEY = 'preptracker_main_user_data';
-    const STREAK_KEY = 'preptracker_main_user_streaks';
+    <script>
+        const STORAGE_KEY = "spaced_repetition_data";
+        const STREAK_KEY = "spaced_repetition_streaks";
+        const REVISION_INTERVALS = [1, 3, 7, 15, 30, 60];
 
-    let currentTab = 'add';
-    let currentActiveSubject = '';
-    let currentChemSub = 'All';
-    let activeSelectedChapter = '';
-    let selectedItemForAction = null;
+        let studyData = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+        let currentTab = 'add'; 
+        let currentActiveSubject = '';
+        let currentChemSubFilter = 'All';
+        let currentActiveChapter = '';
 
-    function autoResizeTextarea(element) {
-        element.style.height = 'auto';
-        element.style.height = (element.scrollHeight) + 'px';
-    }
-
-    function getFormattedDate(dateObj) {
-        return dateObj.toISOString().split('T')[0];
-    }
-
-    function addDays(dateStr, days) {
-        let date = new Date(dateStr);
-        date.setDate(date.getDate() + days);
-        return getFormattedDate(date);
-    }
-
-    function showToast(msg) {
-        const toast = document.getElementById('customToast');
-        toast.innerText = msg;
-        toast.classList.add('show');
-        setTimeout(() => toast.classList.remove('show'), 3000);
-    }
-
-    function toggleSidebar() {
-        document.getElementById('sidebar').classList.toggle('active');
-        document.getElementById('sidebarOverlay').classList.toggle('active');
-    }
-
-    function switchTab(tab) {
-        currentTab = tab;
-        const sliderContent = document.getElementById('sliderContent');
-        const tabAdd = document.getElementById('tabAdd');
-        const tabRev = document.getElementById('tabRev');
-        const streakBadge = document.getElementById('streakBadge');
-
-        if (tab === 'add') {
-            sliderContent.style.transform = 'translateX(0%)';
-            tabAdd.classList.add('active');
-            tabRev.classList.remove('active');
-            streakBadge.className = 'streak-badge add-mode';
-        } else {
-            sliderContent.style.transform = 'translateX(-50%)';
-            tabRev.classList.add('active');
-            tabAdd.classList.remove('active');
-            streakBadge.className = 'streak-badge rev-mode';
-        }
-        renderStreakBadge();
-    }
-
-    // SWIPE DETECT
-    let touchStartX = 0;
-    const sliderWrapper = document.getElementById('sliderWrapper');
-    sliderWrapper.addEventListener('touchstart', e => { touchStartX = e.changedTouches[0].screenX; }, false);
-    sliderWrapper.addEventListener('touchend', e => {
-        let touchEndX = e.changedTouches[0].screenX;
-        if (touchStartX - touchEndX > 50) switchTab('rev');
-        if (touchEndX - touchStartX > 50) switchTab('add');
-    }, false);
-
-    // SAVE TOPIC
-    document.getElementById('studyForm').addEventListener('submit', function(e) {
-        e.preventDefault();
-
-        const subject = document.getElementById('subject').value;
-        const chapter = document.getElementById('chapter').value.trim();
-        const topicsInput = document.getElementById('topics');
-        const topics = topicsInput.value.trim();
-        const today = getFormattedDate(new Date());
-
-        let logs = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
-
-        const newLog = {
-            id: Date.now(),
-            subject: subject,
-            chapter: chapter,
-            topics: topics,
-            dateAdded: today,
-            revisionDates: [
-                addDays(today, 1),
-                addDays(today, 4),
-                addDays(today, 7),
-                addDays(today, 21)
-            ],
-            revisedDates: []
-        };
-
-        logs.push(newLog);
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(logs));
-
-        triggerStreakUpdate('add');
-        showToast("Topic saved successfully! 🚀");
-        document.getElementById('studyForm').reset();
-        topicsInput.style.height = 'auto';
-        loadRevisions();
-        updateSuggestions();
-    });
-
-    function updateSuggestions() {
-        const logs = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
-        const chaptersList = [...new Set(logs.map(l => l.chapter))];
-        const datalist = document.getElementById('chapterSuggestions');
-        datalist.innerHTML = '';
-        chaptersList.forEach(ch => {
-            const opt = document.createElement('option');
-            opt.value = ch;
-            datalist.appendChild(opt);
-        });
-    }
-
-    // SUBJECT PAGE
-    function openSubjectPage(subj) {
-        currentActiveSubject = subj;
-        document.getElementById('subjectTitle').innerText = subj + " View";
-        const chemTabs = document.getElementById('chemSubTabs');
-        
-        if (subj === 'Chemistry') {
-            chemTabs.style.display = 'flex';
-            switchChemSub('All');
-        } else {
-            chemTabs.style.display = 'none';
-            renderSubjectChapters();
-        }
-
-        document.getElementById('subjectPage').classList.add('active');
-    }
-
-    function closeSubjectPage() {
-        document.getElementById('subjectPage').classList.remove('active');
-    }
-
-    function switchChemSub(subType) {
-        currentChemSub = subType;
-        const buttons = document.querySelectorAll('.sub-tab-btn');
-        buttons.forEach(btn => btn.classList.remove('active'));
-        
-        if (subType === 'All') document.getElementById('chemTabAll').classList.add('active');
-        if (subType === 'PC') document.getElementById('chemTabPC').classList.add('active');
-        if (subType === 'OC') document.getElementById('chemTabOC').classList.add('active');
-        if (subType === 'IOC') document.getElementById('chemTabIOC').classList.add('active');
-
-        renderSubjectChapters();
-    }
-
-    function renderSubjectChapters() {
-        const logs = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
-        const container = document.getElementById('subjectChapterList');
-        container.innerHTML = '';
-
-        let filtered = logs.filter(l => {
-            if (currentActiveSubject === 'Chemistry') {
-                if (currentChemSub === 'All') return l.subject.startsWith('Chemistry');
-                return l.subject.trim() === `Chemistry (${currentChemSub})`.trim();
-            }
-            return l.subject.trim() === currentActiveSubject.trim();
+        window.addEventListener('DOMContentLoaded', () => {
+            checkAndResetStreaks();
+            setupDatalist();
+            renderRevisions();
+            updateDashboard();
         });
 
-        if (filtered.length === 0) {
-            container.innerHTML = '<div style="text-align:center; color:var(--text-muted); padding:30px; font-weight:700;">No chapters found.</div>';
-            return;
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('active');
+            document.getElementById('sidebarOverlay').classList.toggle('active');
         }
 
-        const chaptersList = [...new Set(filtered.map(item => item.chapter))];
-
-        chaptersList.forEach(chName => {
-            const count = filtered.filter(f => f.chapter === chName).length;
-            const chapCard = document.createElement('div');
-            chapCard.className = 'chapter-card-item';
-            chapCard.innerHTML = `
-                <span>📖 ${chName}</span>
-                <span style="font-size:0.75rem; color:var(--neon-blue);">${count} Topics ›</span>
-            `;
-
-            chapCard.onclick = () => openChapterPage(chName);
-            setupContextTrigger(chapCard, { chapter: chName, isChapterGroup: true });
-
-            container.appendChild(chapCard);
-        });
-    }
-
-    function openChapterPage(chName) {
-        activeSelectedChapter = chName;
-        document.getElementById('chapterTitle').innerText = chName;
-        renderChapterTopics();
-        document.getElementById('chapterPage').classList.add('active');
-    }
-
-    function renderChapterTopics() {
-        const logs = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
-        const container = document.getElementById('chapterTopicList');
-        container.innerHTML = '';
-
-        const topicsList = logs.filter(l => l.chapter === activeSelectedChapter);
-
-        if(topicsList.length === 0) {
-            closeChapterPage();
-            renderSubjectChapters();
-            return;
+        function autoGrowTextarea(el) {
+            el.style.height = 'auto';
+            el.style.height = el.scrollHeight + 'px';
         }
 
-        topicsList.slice().reverse().forEach(log => {
-            const card = document.createElement('div');
-            card.className = 'topic-log-card';
-            card.innerHTML = `
-                <div style="font-weight:800; font-size:0.95rem; color:var(--neon-blue); margin-bottom:4px;">${log.topics}</div>
-                <div style="font-size:0.75rem; color:var(--text-muted); font-weight:600;">Added On: ${log.dateAdded}</div>
-            `;
+        function switchTab(type) {
+            currentTab = type;
+            const slider = document.getElementById('sliderContent');
+            const addBtn = document.getElementById('addTabBtn');
+            const revBtn = document.getElementById('revTabBtn');
+            const streakBadge = document.getElementById('streakBadge');
 
-            setupContextTrigger(card, { ...log, isChapterGroup: false });
-            container.appendChild(card);
-        });
-    }
-
-    function closeChapterPage() {
-        document.getElementById('chapterPage').classList.remove('active');
-    }
-
-    function setupContextTrigger(element, itemData) {
-        let timer = null;
-        element.oncontextmenu = function(e) {
-            e.preventDefault();
-            triggerActionPopup(itemData);
-        };
-        element.ontouchstart = function() {
-            timer = setTimeout(() => triggerActionPopup(itemData), 500);
-        };
-        element.ontouchend = function() { clearTimeout(timer); };
-        element.ontouchmove = function() { clearTimeout(timer); };
-    }
-
-    function triggerActionPopup(itemData) {
-        selectedItemForAction = itemData;
-        document.getElementById('actionModalTitle').innerText = itemData.isChapterGroup ? itemData.chapter : "Manage Topic";
-        document.getElementById('actionModalDesc').innerText = itemData.isChapterGroup 
-            ? `Do you want to edit or delete all topics under chapter "${itemData.chapter}"?`
-            : `Topic: "${itemData.topics}"\nSelect an action:`;
-
-        document.getElementById('btnActionEdit').onclick = function() {
-            closeModal('actionModal');
-            openEditModal(itemData);
-        };
-
-        document.getElementById('btnActionDelete').onclick = function() {
-            closeModal('actionModal');
-            document.getElementById('confirmDeleteDesc').innerText = itemData.isChapterGroup
-                ? `Delete entire chapter "${itemData.chapter}" and all its topics?`
-                : `Delete only topic "${itemData.topics}"?`;
-            openModal('confirmModal');
-        };
-
-        openModal('actionModal');
-    }
-
-    // IN-PLACE EDIT POPUP LOGIC
-    function openEditModal(itemData) {
-        const input = document.getElementById('editInputVal');
-        const label = document.getElementById('editModalLabel');
-
-        if (itemData.isChapterGroup) {
-            label.innerText = "Chapter Name";
-            input.value = itemData.chapter;
-        } else {
-            label.innerText = "Topic Name";
-            input.value = itemData.topics;
-        }
-
-        document.getElementById('btnSaveEdit').onclick = function() {
-            const newVal = input.value.trim();
-            if (!newVal) return;
-
-            let logs = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
-
-            if (itemData.isChapterGroup) {
-                // Edit Chapter name for all matching topics
-                logs = logs.map(l => {
-                    if (l.chapter === itemData.chapter) {
-                        l.chapter = newVal;
-                    }
-                    return l;
-                });
-                activeSelectedChapter = newVal;
+            if (type === 'add') {
+                slider.style.transform = 'translateX(0%)';
+                addBtn.classList.add('active'); revBtn.classList.remove('active');
+                streakBadge.className = 'streak-badge add-mode';
             } else {
-                // Edit specific topic name
-                logs = logs.map(l => {
-                    if (l.id === itemData.id) {
-                        l.topics = newVal;
-                    }
-                    return l;
-                });
+                slider.style.transform = 'translateX(-50%)';
+                revBtn.classList.add('active'); addBtn.classList.remove('active');
+                streakBadge.className = 'streak-badge rev-mode';
             }
-
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(logs));
-            closeModal('editModal');
-            showToast("Updated successfully! ✏️");
-            
-            renderSubjectChapters();
-            if(document.getElementById('chapterPage').classList.contains('active')) {
-                renderChapterTopics();
-            }
-            loadRevisions();
-            updateSuggestions();
-        };
-
-        openModal('editModal');
-    }
-
-    // CONFIRM DELETE ACTION
-    document.getElementById('btnConfirmDelete').onclick = function() {
-        if (selectedItemForAction) {
-            let logs = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
-            
-            if (selectedItemForAction.isChapterGroup) {
-                // Delete Entire Chapter
-                logs = logs.filter(l => l.chapter !== selectedItemForAction.chapter);
-            } else {
-                // Delete ONLY Specific Topic by ID
-                logs = logs.filter(l => l.id !== selectedItemForAction.id);
-            }
-
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(logs));
-            closeModal('confirmModal');
-            showToast("Deleted successfully! 🗑️");
-            
-            renderSubjectChapters();
-            if(document.getElementById('chapterPage').classList.contains('active')) {
-                renderChapterTopics();
-            }
-            loadRevisions();
-            updateSuggestions();
-        }
-    };
-
-    function loadRevisions() {
-        const logs = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
-        const today = getFormattedDate(new Date());
-        const container = document.getElementById('revisionList');
-        
-        container.innerHTML = '';
-        let dueList = [];
-
-        logs.forEach(log => {
-            log.revisionDates.forEach(revDate => {
-                if (revDate <= today && !log.revisedDates?.includes(revDate)) {
-                    dueList.push({ ...log, currentRevDate: revDate, isLate: revDate < today });
-                }
-            });
-        });
-
-        if (dueList.length === 0) {
-            container.innerHTML = '<div style="text-align:center; color:var(--text-muted); padding:30px; font-size:0.85rem; font-weight:700;">🎉 No revisions due for today!</div>';
-            return;
+            checkAndResetStreaks();
         }
 
-        dueList.forEach(item => {
-            const card = document.createElement('div');
-            card.className = `revision-card ${item.isLate ? 'late' : ''}`;
-            
-            card.innerHTML = `
-                <div class="revision-info">
-                    <div style="font-size:0.7rem; color:var(--text-muted); text-transform:uppercase; font-weight:800;">${item.subject}</div>
-                    <div class="revision-title">${item.chapter} ${item.isLate ? '<span class="late-badge">⚠️ Overdue</span>' : ''}</div>
-                    <div class="revision-topics">${item.topics}</div>
-                    <div class="revision-date">Due Date: ${item.currentRevDate}</div>
-                </div>
-                <button class="circle-check-btn ${item.isLate ? 'late-btn' : ''}" onclick="toggleReviseCheck(this, ${item.id}, '${item.currentRevDate}')">
-                    ✓
-                </button>
-            `;
-            container.appendChild(card);
-        });
-    }
+        function getFormattedDate(dateObj) {
+            const yyyy = dateObj.getFullYear();
+            const mm = String(dateObj.getMonth() + 1).padStart(2, '0');
+            const dd = String(dateObj.getDate()).padStart(2, '0');
+            return `${yyyy}-${mm}-${dd}`;
+        }
 
-    function toggleReviseCheck(btn, id, revDate) {
-        btn.classList.add('checked');
-        let logs = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
-        logs = logs.map(l => {
-            if (l.id === id) {
-                if (!l.revisedDates) l.revisedDates = [];
-                l.revisedDates.push(revDate);
-            }
-            return l;
-        });
+        function addDays(dateStr, days) {
+            const date = new Date(dateStr);
+            date.setDate(date.getDate() + days);
+            return getFormattedDate(date);
+        }
 
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(logs));
-        triggerStreakUpdate('rev');
-        showToast("Marked as Revised! 🟢");
+        function updateStreaks(mode) {
+            let streaks = JSON.parse(localStorage.getItem(STREAK_KEY)) || {
+                add: { count: 0, lastDate: null },
+                rev: { count: 0, lastDate: null }
+            };
+            const today = getFormattedDate(new Date());
+            const target = streaks[mode];
 
-        setTimeout(() => loadRevisions(), 400);
-    }
+            if (target.lastDate === today) return;
 
-    function triggerStreakUpdate(type) {
-        const today = getFormattedDate(new Date());
-        let streaks = JSON.parse(localStorage.getItem(STREAK_KEY)) || {
-            add: { count: 0, lastDate: "" },
-            rev: { count: 0, lastDate: "" }
-        };
-
-        let target = streaks[type];
-        if (target.lastDate !== today) {
             if (target.lastDate === addDays(today, -1)) {
                 target.count += 1;
             } else {
@@ -993,41 +857,419 @@
             }
             target.lastDate = today;
             localStorage.setItem(STREAK_KEY, JSON.stringify(streaks));
+            checkAndResetStreaks();
         }
-        renderStreakBadge();
-    }
 
-    function renderStreakBadge() {
-        const today = getFormattedDate(new Date());
-        let streaks = JSON.parse(localStorage.getItem(STREAK_KEY)) || {
-            add: { count: 0, lastDate: "" },
-            rev: { count: 0, lastDate: "" }
-        };
+        function checkAndResetStreaks() {
+            let streaks = JSON.parse(localStorage.getItem(STREAK_KEY)) || {
+                add: { count: 0, lastDate: null },
+                rev: { count: 0, lastDate: null }
+            };
+            const today = getFormattedDate(new Date());
 
-        ['add', 'rev'].forEach(k => {
-            if (streaks[k].lastDate && streaks[k].lastDate !== today && streaks[k].lastDate !== addDays(today, -1)) {
-                streaks[k].count = 0;
-            }
+            ['add', 'rev'].forEach(k => {
+                if (streaks[k].lastDate && streaks[k].lastDate !== today && streaks[k].lastDate !== addDays(today, -1)) {
+                    streaks[k].count = 0;
+                }
+            });
+
+            localStorage.setItem(STREAK_KEY, JSON.stringify(streaks));
+            const activeVal = currentTab === 'add' ? streaks.add.count : streaks.rev.count;
+            document.getElementById('streakDisplayVal').innerText = activeVal;
+            document.getElementById('addStreakVal').innerText = streaks.add.count;
+            document.getElementById('revStreakVal').innerText = streaks.rev.count;
+        }
+
+        /* UPDATED DASHBOARD FOR TODAY'S REVISIONS ONLY */
+        function updateDashboard() {
+            const todayStr = getFormattedDate(new Date());
+            let totalDueToday = 0;
+            let totalDoneToday = 0;
+            let overdueCount = 0;
+
+            let subjectStats = {
+                Physics: { due: 0, done: 0 },
+                Chemistry: { due: 0, done: 0 },
+                Maths: { due: 0, done: 0 }
+            };
+
+            studyData.forEach(item => {
+                let mainSub = item.subject.startsWith('Chemistry') ? 'Chemistry' : item.subject;
+
+                item.revisions.forEach(rev => {
+                    // Agar revision ki date aaj ki hai ya purani (overdue) hai
+                    if (rev.date <= todayStr) {
+                        totalDueToday++;
+                        if (subjectStats[mainSub]) subjectStats[mainSub].due++;
+
+                        if (rev.date < todayStr && !rev.completed) {
+                            overdueCount++;
+                        }
+
+                        if (rev.completed && rev.date === todayStr) {
+                            totalDoneToday++;
+                            if (subjectStats[mainSub]) subjectStats[mainSub].done++;
+                        }
+                    }
+                });
+            });
+
+            // Calculate percentage based strictly on today's due revisions completion
+            const todayCompletionPct = totalDueToday > 0 ? Math.round((totalDoneToday / totalDueToday) * 100) : 0;
+            document.getElementById('overallPercent').innerText = `${todayCompletionPct}%`;
+
+            const maxOffset = 283;
+            const offset = maxOffset - (todayCompletionPct / 100) * maxOffset;
+            document.getElementById('progressCircle').style.strokeDashoffset = offset;
+
+            document.getElementById('statTotal').innerText = totalDueToday;
+            document.getElementById('statDone').innerText = totalDoneToday;
+            document.getElementById('statPending').innerText = overdueCount;
+
+            ['Physics', 'Chemistry', 'Maths'].forEach(s => {
+                const stat = subjectStats[s];
+                const prefix = s === 'Physics' ? 'phy' : s === 'Chemistry' ? 'chem' : 'math';
+                document.getElementById(`${prefix}Ratio`).innerText = `${stat.done}/${stat.due}`;
+                const pct = stat.due > 0 ? Math.round((stat.done / stat.due) * 100) : 0;
+                document.getElementById(`${prefix}Bar`).style.width = `${pct}%`;
+            });
+        }
+
+        document.getElementById('studyForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const subject = document.getElementById('subject').value;
+            const chapter = document.getElementById('chapter').value.trim();
+            const topics = document.getElementById('topics').value.trim();
+            const todayStr = getFormattedDate(new Date());
+
+            const revisions = REVISION_INTERVALS.map(days => ({
+                intervalDays: days,
+                date: addDays(todayStr, days),
+                completed: false
+            }));
+
+            const newItem = {
+                id: Date.now(),
+                subject,
+                chapter,
+                topics,
+                dateAdded: todayStr,
+                revisions
+            };
+
+            studyData.push(newItem);
+            saveData();
+            updateStreaks('add');
+            e.target.reset();
+            document.getElementById('topics').style.height = '48px';
+            showToast("✨ Topic saved successfully!");
+            setupDatalist();
+            updateDashboard();
         });
 
-        localStorage.setItem(STREAK_KEY, JSON.stringify(streaks));
+        function saveData() {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(studyData));
+            renderRevisions();
+            updateDashboard();
+        }
 
-        const activeVal = currentTab === 'add' ? streaks.add.count : streaks.rev.count;
-        document.getElementById('streakDisplayVal').innerText = activeVal;
-        document.getElementById('addStreakVal').innerText = streaks.add.count;
-        document.getElementById('revStreakVal').innerText = streaks.rev.count;
-    }
+        function setupDatalist() {
+            const datalist = document.getElementById('chapterSuggestions');
+            const chapters = [...new Set(studyData.map(i => i.chapter))];
+            datalist.innerHTML = chapters.map(c => `<option value="${c}">`).join('');
+        }
 
-    function openStreakModal() { openModal('streakModal'); }
-    function openModal(id) { document.getElementById(id).classList.add('active'); }
-    function closeModal(id) { document.getElementById(id).classList.remove('active'); }
-    function closeModalOnOuter(e, id) { if (e.target.id === id) closeModal(id); }
+        function renderRevisions() {
+            const revList = document.getElementById('revisionList');
+            const todayStr = getFormattedDate(new Date());
+            let dueItems = [];
 
-    window.onload = function() {
-        renderStreakBadge();
-        loadRevisions();
-        updateSuggestions();
-    };
-</script>
+            studyData.forEach(item => {
+                item.revisions.forEach((rev, index) => {
+                    if (!rev.completed && rev.date <= todayStr) {
+                        dueItems.push({
+                            itemId: item.id,
+                            revIndex: index,
+                            subject: item.subject,
+                            chapter: item.chapter,
+                            topics: item.topics,
+                            dueDate: rev.date,
+                            intervalDays: rev.intervalDays,
+                            isLate: rev.date < todayStr
+                        });
+                    }
+                });
+            });
+
+            if (dueItems.length === 0) {
+                revList.innerHTML = `<div style="text-align:center; padding:30px 10px; color:var(--text-muted); font-weight:700;"> 🎉 All caught up! No revisions pending for today. </div>`;
+                return;
+            }
+
+            revList.innerHTML = dueItems.map(d => `
+                <div class="revision-card ${d.isLate ? 'late' : ''}">
+                    <div class="revision-info">
+                        <div class="revision-title">${d.chapter} <span style="color:var(--neon-blue); font-size:0.75rem;">(${d.subject})</span></div>
+                        <div class="revision-topics">${d.topics}</div>
+                        <div class="revision-date">
+                            Revision: Day ${d.intervalDays} (${d.dueDate})
+                            ${d.isLate ? '<span class="late-badge">Overdue</span>' : ''}
+                        </div>
+                    </div>
+                    <button class="circle-check-btn ${d.isLate ? 'late-btn' : ''}" onclick="completeRevision(${d.itemId}, ${d.revIndex})">✓</button>
+                </div>
+            `).join('');
+        }
+
+        function completeRevision(itemId, revIndex) {
+            const item = studyData.find(i => i.id === itemId);
+            if (item) {
+                item.revisions[revIndex].completed = true;
+                saveData();
+                updateStreaks('rev');
+                showToast("🎉 Revision marked complete!");
+            }
+        }
+
+        function openSubjectPage(subjName) {
+            currentActiveSubject = subjName;
+            document.getElementById('subjectTitle').innerText = `${subjName} Chapters`;
+            const chemSubTabs = document.getElementById('chemSubTabs');
+            if (subjName === 'Chemistry') {
+                chemSubTabs.style.display = 'flex';
+                switchChemSub('All');
+            } else {
+                chemSubTabs.style.display = 'none';
+                renderSubjectChapters();
+            }
+            openFullscreenPage('subjectPage');
+        }
+
+        function closeSubjectPage() { closeFullscreenPage('subjectPage'); }
+
+        function switchChemSub(type) {
+            currentChemSubFilter = type;
+            ['All', 'PC', 'OC', 'IOC'].forEach(t => {
+                const btn = document.getElementById(`chemTab${t}`);
+                if (btn) btn.classList.toggle('active', t === type);
+            });
+            renderSubjectChapters();
+        }
+
+        function renderSubjectChapters() {
+            const container = document.getElementById('subjectChapterList');
+            let filtered = studyData.filter(i => {
+                if (currentActiveSubject === 'Chemistry' && currentChemSubFilter !== 'All') {
+                    return i.subject === `Chemistry-${currentChemSubFilter}`;
+                }
+                return i.subject.startsWith(currentActiveSubject);
+            });
+
+            const uniqueChapters = [...new Set(filtered.map(i => i.chapter))];
+
+            if(uniqueChapters.length === 0) {
+                container.innerHTML = `<div style="text-align:center; padding:30px; color:var(--text-muted); font-weight:700;">No chapters found in ${currentActiveSubject}.</div>`;
+                return;
+            }
+
+            container.innerHTML = uniqueChapters.map(ch => {
+                const escapedCh = ch.replace(/'/g, "\\'");
+                return `
+                    <div class="chapter-card-item" 
+                         onclick="openChapterPage('${escapedCh}')"
+                         oncontextmenu="event.preventDefault(); openActionModal('chapter', '${escapedCh}')"
+                         ontouchstart="handleTouchStart(event, 'chapter', '${escapedCh}')"
+                         ontouchend="handleTouchEnd()"
+                         ontouchmove="handleTouchCancel()">
+                        <span>📖 ${ch}</span>
+                        <span style="color:var(--neon-blue); font-size:0.8rem;">→</span>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function openChapterPage(chName) {
+            currentActiveChapter = chName;
+            document.getElementById('chapterTitle').innerText = chName;
+            renderChapterTopics();
+            openFullscreenPage('chapterPage');
+        }
+
+        function closeChapterPage() { closeFullscreenPage('chapterPage'); }
+
+        function renderChapterTopics() {
+            const container = document.getElementById('chapterTopicList');
+            const items = studyData.filter(i => i.chapter === currentActiveChapter);
+            
+            if (items.length === 0) {
+                container.innerHTML = `<div style="text-align:center; padding:30px; color:var(--text-muted); font-weight:700;">No topics found in this chapter.</div>`;
+                return;
+            }
+
+            container.innerHTML = items.map(item => `
+                <div class="topic-log-card" 
+                     onclick="openActionModal('topic', ${item.id})"
+                     oncontextmenu="event.preventDefault(); openActionModal('topic', ${item.id})"
+                     ontouchstart="handleTouchStart(event, 'topic', ${item.id})"
+                     ontouchend="handleTouchEnd()"
+                     ontouchmove="handleTouchCancel()">
+                    <div style="font-weight:800; margin-bottom:4px;">${item.topics}</div>
+                    <div style="font-size:0.75rem; color:var(--text-muted); font-weight:700;">Added on: ${item.dateAdded}</div>
+                </div>
+            `).join('');
+        }
+
+        let touchTimer = null;
+        function handleTouchStart(e, type, targetVal) {
+            touchTimer = setTimeout(() => {
+                if (navigator.vibrate) navigator.vibrate(50);
+                openActionModal(type, targetVal);
+            }, 500);
+        }
+
+        function handleTouchEnd() { clearTimeout(touchTimer); }
+        function handleTouchCancel() { clearTimeout(touchTimer); }
+
+        let activeTargetType = null;
+        let activeTargetVal = null;
+
+        function openActionModal(type, targetVal) {
+            activeTargetType = type;
+            activeTargetVal = targetVal;
+
+            const titleEl = document.getElementById('actionModalTitle');
+            const descEl = document.getElementById('actionModalDesc');
+
+            if (type === 'chapter') {
+                titleEl.innerText = "📖 Manage Chapter";
+                descEl.innerText = `Edit or delete chapter: "${targetVal}"`;
+            } else {
+                const topicItem = studyData.find(i => i.id === targetVal);
+                titleEl.innerText = "📝 Manage Topic";
+                descEl.innerText = topicItem ? `Manage topic: "${topicItem.topics}"` : "Edit or delete this topic";
+            }
+
+            document.getElementById('btnActionEdit').onclick = () => {
+                closeModal('actionModal');
+                openEditModal();
+            };
+
+            document.getElementById('btnActionDelete').onclick = () => {
+                closeModal('actionModal');
+                openConfirmModal();
+            };
+
+            openModal('actionModal');
+        }
+
+        function openEditModal() {
+            const titleEl = document.getElementById('editModalTitle');
+            const labelEl = document.getElementById('editModalLabel');
+            const inputEl = document.getElementById('editInputVal');
+
+            if (activeTargetType === 'chapter') {
+                titleEl.innerText = "✏️ Edit Chapter Name";
+                labelEl.innerText = "Chapter Name";
+                inputEl.value = activeTargetVal;
+            } else {
+                const topicItem = studyData.find(i => i.id === activeTargetVal);
+                titleEl.innerText = "✏️ Edit Topic";
+                labelEl.innerText = "Topic Details";
+                inputEl.value = topicItem ? topicItem.topics : '';
+            }
+
+            document.getElementById('btnSaveEdit').onclick = () => {
+                const newVal = inputEl.value.trim();
+                if (!newVal) return;
+
+                if (activeTargetType === 'chapter') {
+                    const oldCh = activeTargetVal;
+                    studyData.forEach(item => {
+                        if (item.chapter === oldCh) item.chapter = newVal;
+                    });
+                    currentActiveChapter = newVal;
+                    document.getElementById('chapterTitle').innerText = newVal;
+                    showToast("✏️ Chapter renamed!");
+                } else {
+                    const item = studyData.find(i => i.id === activeTargetVal);
+                    if (item) item.topics = newVal;
+                    showToast("✏️ Topic updated!");
+                }
+
+                saveData();
+                setupDatalist();
+                closeModal('editModal');
+
+                if (document.getElementById('chapterPage').classList.contains('active')) {
+                    renderChapterTopics();
+                }
+                if (document.getElementById('subjectPage').classList.contains('active')) {
+                    renderSubjectChapters();
+                }
+            };
+
+            openModal('editModal');
+        }
+
+        function openConfirmModal() {
+            const descEl = document.getElementById('confirmDeleteDesc');
+
+            if (activeTargetType === 'chapter') {
+                descEl.innerText = `Warning: Deleting chapter "${activeTargetVal}" will remove ALL topics inside it!`;
+            } else {
+                descEl.innerText = `Are you sure you want to delete this topic only?`;
+            }
+
+            document.getElementById('btnConfirmDelete').onclick = () => {
+                if (activeTargetType === 'chapter') {
+                    const chName = activeTargetVal;
+                    studyData = studyData.filter(i => i.chapter !== chName);
+                    saveData();
+                    setupDatalist();
+                    closeModal('confirmModal');
+                    closeChapterPage();
+                    renderSubjectChapters();
+                    showToast("🗑️ Chapter deleted!");
+                } else {
+                    const id = activeTargetVal;
+                    studyData = studyData.filter(i => i.id !== id);
+                    saveData();
+                    setupDatalist();
+                    closeModal('confirmModal');
+                    if (document.getElementById('chapterPage').classList.contains('active')) {
+                        renderChapterTopics();
+                    }
+                    showToast("🗑️ Topic deleted!");
+                }
+            };
+
+            openModal('confirmModal');
+        }
+
+        function openModal(id) { document.getElementById(id).classList.add('active'); }
+        function closeModal(id) { document.getElementById(id).classList.remove('active'); }
+        function closeModalOnOuter(e, id) { if (e.target.classList.contains('modal-overlay')) closeModal(id); }
+
+        function openFullscreenPage(id) {
+            const page = document.getElementById(id);
+            page.style.display = 'flex';
+            setTimeout(() => page.classList.add('active'), 10);
+        }
+
+        function closeFullscreenPage(id) {
+            const page = document.getElementById(id);
+            page.classList.remove('active');
+            setTimeout(() => page.style.display = 'none', 250);
+        }
+
+        function openStreakModal() { openModal('streakModal'); }
+
+        function showToast(msg) {
+            const toast = document.getElementById('customToast');
+            toast.innerText = msg;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 2500);
+        }
+    </script>
 </body>
 </html>
