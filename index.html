@@ -275,6 +275,20 @@
         .slider-content { display: flex; width: 200%; transition: transform 0.25s ease; }
         .slide-panel { width: 50%; padding: 20px; }
 
+        /* Scrollable Revision Panel Container */
+        #revisionList {
+            max-height: 400px;
+            overflow-y: auto;
+            padding-right: 4px;
+        }
+        #revisionList::-webkit-scrollbar {
+            width: 4px;
+        }
+        #revisionList::-webkit-scrollbar-thumb {
+            background: var(--card-border);
+            border-radius: 4px;
+        }
+
         .form-group { margin-bottom: 14px; }
         label {
             display: block;
@@ -295,7 +309,6 @@
             border-color: var(--neon-blue);
         }
 
-        /* Chapter Input Container with Dropdown Arrow & Suggestions */
         .chapter-input-container {
             position: relative;
             display: flex;
@@ -782,7 +795,6 @@
     <script>
         const STORAGE_KEY = "spaced_repetition_data";
         const STREAK_KEY = "spaced_repetition_streaks";
-        // Updated Revision Intervals: Next Day (1), 3rd Day (3), 7th Day (7), 21st Day (21)
         const REVISION_INTERVALS = [1, 3, 7, 21];
 
         let studyData = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
@@ -918,7 +930,6 @@
             });
         }
 
-        // --- Subject-Wise Chapter Suggestions & Dropdown ---
         function handleSubjectChange() {
             closeChapterDropdownList();
             document.getElementById('chapter').value = '';
