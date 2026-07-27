@@ -310,6 +310,65 @@
             box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.15);
         }
 
+        /* Custom Chapter Input Container with Dropdown Arrow */
+        .chapter-input-container {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+        .chapter-input-container input {
+            padding-right: 42px;
+        }
+        .chapter-dropdown-btn {
+            position: absolute;
+            right: 12px;
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            cursor: pointer;
+            padding: 4px;
+            transition: var(--transition-smooth);
+        }
+        .chapter-dropdown-btn:hover {
+            color: var(--neon-blue);
+        }
+
+        /* Custom Dropdown Suggestions Box */
+        .custom-suggestions-dropdown {
+            position: absolute;
+            top: calc(100% + 4px);
+            left: 0;
+            right: 0;
+            background: var(--input-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 10px;
+            box-shadow: var(--card-shadow);
+            max-height: 160px;
+            overflow-y: auto;
+            z-index: 50;
+            display: none;
+        }
+        .custom-suggestions-dropdown.active {
+            display: block;
+        }
+        .suggestion-item {
+            padding: 10px 14px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-main);
+            cursor: pointer;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+            transition: background 0.15s ease;
+        }
+        .suggestion-item:last-child {
+            border-bottom: none;
+        }
+        .suggestion-item:hover {
+            background: rgba(56, 189, 248, 0.1);
+            color: var(--neon-blue);
+        }
+
         .btn-neon {
             width: 100%;
             background: linear-gradient(135deg, var(--neon-blue), #00b862);
@@ -361,7 +420,8 @@
         .revision-date { font-size: 0.7rem; color: var(--text-muted); margin-top: 4px; font-weight: 700; }
 
         .circle-check-btn {
-            width: 34px; height: 34px; border-radius: 50%;
+            width: 34px;
+            height: 34px; border-radius: 50%;
             border: 2px solid var(--neon-blue); background: transparent; cursor: pointer;
             display: flex; align-items: center; justify-content: center; flex-shrink: 0;
             color: transparent; font-weight: 900; transition: var(--transition-smooth);
@@ -375,7 +435,8 @@
         .circle-check-btn.late-btn { border-color: var(--neon-red); }
 
         .late-badge {
-            font-size: 0.65rem; font-weight: 800; background: rgba(255, 75, 75, 0.15);
+            font-size: 0.65rem;
+            font-weight: 800; background: rgba(255, 75, 75, 0.15);
             color: var(--neon-red); border: 1px solid var(--neon-red);
             padding: 2px 6px; border-radius: 10px; margin-left: 6px;
         }
@@ -523,7 +584,7 @@
         .portfolio-link:hover { text-decoration: underline; color: var(--neon-green); }
     </style>
 </head>
-<body>
+<body onclick="handleBodyClick(event)">
 
     <nav class="navbar">
         <div class="nav-left">
@@ -630,7 +691,6 @@
                 <button class="tab-btn active add-tab" id="addTabBtn" onclick="switchTab('add')">➕ Log Today's Study</button>
                 <button class="tab-btn rev-tab" id="revTabBtn" onclick="switchTab('rev')">🔔 Today's Revisions</button>
             </div>
-
             <div class="slider-content" id="sliderContent">
                 <div class="slide-panel">
                     <form id="studyForm">
@@ -646,8 +706,13 @@
                         </div>
                         <div class="form-group">
                             <label>Chapter Name</label>
-                            <input type="text" id="chapter" placeholder="e.g. Thermodynamics" required autocomplete="off" list="chapterSuggestions" />
-                            <datalist id="chapterSuggestions"></datalist>
+                            <div class="chapter-input-container">
+                                <input type="text" id="chapter" placeholder="e.g. Thermodynamics" required autocomplete="off" oninput="handleChapterInput()" />
+                                <button type="button" class="chapter-dropdown-btn" onclick="toggleChapterDropdown(event)">
+                                    <i class="fa-solid fa-chevron-down" id="chapterArrowIcon"></i>
+                                </button>
+                                <div class="custom-suggestions-dropdown" id="chapterSuggestionsList"></div>
+                            </div>
                         </div>
                         <div class="form-group">
                             <label>Topics / Key Notes</label>
@@ -656,7 +721,6 @@
                         <button type="submit" class="btn-neon">🚀 Save Study Log</button>
                     </form>
                 </div>
-
                 <div class="slide-panel">
                     <div id="revisionList"></div>
                 </div>
@@ -682,26 +746,26 @@
 
     <div class="fullscreen-page" id="subjectPage">
         <div class="fullscreen-header">
-            <button class="back-btn" onclick="closeSubjectPage()">← Back to Home</button>
-            <h2 id="subjectTitle" style="font-size:1.1rem; color:var(--neon-blue); font-weight:800;">Subject Chapters</h2>
-            <div></div>
+            <button class="back-btn" onclick="closeSubjectPage()">← Back</button>
+            <div class="brand-title" id="subjectTitle" style="font-size:1rem;">Chapters</div>
+            <div style="width:50px;"></div>
         </div>
         <div class="sub-nav-tabs" id="chemSubTabs" style="display:none;">
-            <button class="sub-tab-btn active" id="chemTabAll" onclick="switchChemSub('All')">All Chem</button>
-            <button class="sub-tab-btn" id="chemTabPC" onclick="switchChemSub('PC')">PC (Physical)</button>
-            <button class="sub-tab-btn" id="chemTabOC" onclick="switchChemSub('OC')">OC (Organic)</button>
-            <button class="sub-tab-btn" id="chemTabIOC" onclick="switchChemSub('IOC')">IOC (Inorganic)</button>
+            <button class="sub-tab-btn active" id="chemTabAll" onclick="switchChemSub('All')">All</button>
+            <button class="sub-tab-btn" id="chemTabPC" onclick="switchChemSub('PC')">Physical</button>
+            <button class="sub-tab-btn" id="chemTabOC" onclick="switchChemSub('OC')">Organic</button>
+            <button class="sub-tab-btn" id="chemTabIOC" onclick="switchChemSub('IOC')">Inorganic</button>
         </div>
-        <div id="subjectChapterList"></div>
+        <div id="subjectChapterList" style="flex:1;"></div>
     </div>
 
-    <div class="fullscreen-page" id="chapterPage" style="z-index:260;">
+    <div class="fullscreen-page" id="chapterPage">
         <div class="fullscreen-header">
-            <button class="back-btn" onclick="closeChapterPage()">← Back to Subject</button>
-            <h2 id="chapterTitle" style="font-size:1.1rem; color:var(--neon-blue); font-weight:800;">Chapter Topics</h2>
-            <div></div>
+            <button class="back-btn" onclick="closeChapterPage()">← Back</button>
+            <div class="brand-title" id="chapterTitle" style="font-size:1rem;">Topics</div>
+            <div style="width:50px;"></div>
         </div>
-        <div id="chapterTopicList"></div>
+        <div id="chapterTopicList" style="flex:1;"></div>
     </div>
 
     <div class="modal-overlay" id="actionModal" onclick="closeModalOnOuter(event, 'actionModal')">
@@ -777,7 +841,7 @@
                 <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
             </a>
         </div>
-        <div class="footer-credit">Developed by <a href="https://Priyanshusingh.pages.dev" target="_blank" class="portfolio-link">Priyanshu Singh</a></div>
+        <div class="footer-credit">Built with ❤️ by <a href="https://Priyanshusingh.pages.dev" target="_blank" class="portfolio-link">Priyanshu Singh</a></div>
     </footer>
 
     <script>
@@ -786,14 +850,13 @@
         const REVISION_INTERVALS = [1, 3, 7, 15, 30, 60];
 
         let studyData = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
-        let currentTab = 'add'; 
+        let currentTab = 'add';
         let currentActiveSubject = '';
         let currentChemSubFilter = 'All';
         let currentActiveChapter = '';
 
         window.addEventListener('DOMContentLoaded', () => {
             checkAndResetStreaks();
-            setupDatalist();
             renderRevisions();
             updateDashboard();
         });
@@ -817,11 +880,13 @@
 
             if (type === 'add') {
                 slider.style.transform = 'translateX(0%)';
-                addBtn.classList.add('active'); revBtn.classList.remove('active');
+                addBtn.classList.add('active');
+                revBtn.classList.remove('active');
                 streakBadge.className = 'streak-badge add-mode';
             } else {
                 slider.style.transform = 'translateX(-50%)';
-                revBtn.classList.add('active'); addBtn.classList.remove('active');
+                revBtn.classList.add('active');
+                addBtn.classList.remove('active');
                 streakBadge.className = 'streak-badge rev-mode';
             }
             checkAndResetStreaks();
@@ -841,15 +906,10 @@
         }
 
         function updateStreaks(mode) {
-            let streaks = JSON.parse(localStorage.getItem(STREAK_KEY)) || {
-                add: { count: 0, lastDate: null },
-                rev: { count: 0, lastDate: null }
-            };
+            let streaks = JSON.parse(localStorage.getItem(STREAK_KEY)) || { add: { count: 0, lastDate: null }, rev: { count: 0, lastDate: null } };
             const today = getFormattedDate(new Date());
             const target = streaks[mode];
-
             if (target.lastDate === today) return;
-
             if (target.lastDate === addDays(today, -1)) {
                 target.count += 1;
             } else {
@@ -861,26 +921,20 @@
         }
 
         function checkAndResetStreaks() {
-            let streaks = JSON.parse(localStorage.getItem(STREAK_KEY)) || {
-                add: { count: 0, lastDate: null },
-                rev: { count: 0, lastDate: null }
-            };
+            let streaks = JSON.parse(localStorage.getItem(STREARK_KEY || STREAK_KEY)) || { add: { count: 0, lastDate: null }, rev: { count: 0, lastDate: null } };
             const today = getFormattedDate(new Date());
-
             ['add', 'rev'].forEach(k => {
                 if (streaks[k].lastDate && streaks[k].lastDate !== today && streaks[k].lastDate !== addDays(today, -1)) {
                     streaks[k].count = 0;
                 }
             });
-
             localStorage.setItem(STREAK_KEY, JSON.stringify(streaks));
             const activeVal = currentTab === 'add' ? streaks.add.count : streaks.rev.count;
             document.getElementById('streakDisplayVal').innerText = activeVal;
-            document.getElementById('addStreakVal').innerText = streaks.add.count;
-            document.getElementById('revStreakVal').innerText = streaks.rev.count;
+            document.getElementById('addStreakVal').innerText = `${streaks.add.count} Days`;
+            document.getElementById('revStreakVal').innerText = `${streaks.rev.count} Days`;
         }
 
-        /* UPDATED DASHBOARD FOR TODAY'S REVISIONS ONLY */
         function updateDashboard() {
             const todayStr = getFormattedDate(new Date());
             let totalDueToday = 0;
@@ -888,24 +942,20 @@
             let overdueCount = 0;
 
             let subjectStats = {
-                Physics: { due: 0, done: 0 },
-                Chemistry: { due: 0, done: 0 },
-                Maths: { due: 0, done: 0 }
+                'Physics': { due: 0, done: 0 },
+                'Chemistry': { due: 0, done: 0 },
+                'Maths': { due: 0, done: 0 }
             };
 
             studyData.forEach(item => {
                 let mainSub = item.subject.startsWith('Chemistry') ? 'Chemistry' : item.subject;
-
-                item.revisions.forEach(rev => {
-                    // Agar revision ki date aaj ki hai ya purani (overdue) hai
+                item.revisions.forEach((rev) => {
                     if (rev.date <= todayStr) {
                         totalDueToday++;
                         if (subjectStats[mainSub]) subjectStats[mainSub].due++;
-
                         if (rev.date < todayStr && !rev.completed) {
                             overdueCount++;
                         }
-
                         if (rev.completed && rev.date === todayStr) {
                             totalDoneToday++;
                             if (subjectStats[mainSub]) subjectStats[mainSub].done++;
@@ -914,14 +964,11 @@
                 });
             });
 
-            // Calculate percentage based strictly on today's due revisions completion
             const todayCompletionPct = totalDueToday > 0 ? Math.round((totalDoneToday / totalDueToday) * 100) : 0;
             document.getElementById('overallPercent').innerText = `${todayCompletionPct}%`;
-
             const maxOffset = 283;
             const offset = maxOffset - (todayCompletionPct / 100) * maxOffset;
             document.getElementById('progressCircle').style.strokeDashoffset = offset;
-
             document.getElementById('statTotal').innerText = totalDueToday;
             document.getElementById('statDone').innerText = totalDoneToday;
             document.getElementById('statPending').innerText = overdueCount;
@@ -935,35 +982,92 @@
             });
         }
 
+        // --- Subject & Chapter Suggestions / Dropdown Logic ---
+        function handleSubjectChange() {
+            closeChapterDropdownList();
+            document.getElementById('chapter').value = '';
+        }
+
+        function getChaptersForCurrentSubject() {
+            const selectedSubject = document.getElementById('subject').value;
+            // Filter chapters belonging specifically to the selected subject
+            const filteredItems = studyData.filter(item => item.subject === selectedSubject);
+            return [...new Set(filteredItems.map(i => i.chapter))];
+        }
+
+        function handleChapterInput() {
+            const inputVal = document.getElementById('chapter').value.trim().toLowerCase();
+            const chapters = getChaptersForCurrentSubject();
+            const dropdown = document.getElementById('chapterSuggestionsList');
+
+            if (!inputVal) {
+                dropdown.classList.remove('active');
+                return;
+            }
+
+            const matched = chapters.filter(c => c.toLowerCase().includes(inputVal));
+            if (matched.length === 0) {
+                dropdown.classList.remove('active');
+                return;
+            }
+
+            dropdown.innerHTML = matched.map(c => `<div class="suggestion-item" onclick="selectChapterSuggestion('${c.replace(/'/g, "\\'")}')">${c}</div>`).join('');
+            dropdown.classList.add('active');
+        }
+
+        function toggleChapterDropdown(e) {
+            e.stopPropagation();
+            const dropdown = document.getElementById('chapterSuggestionsList');
+            if (dropdown.classList.contains('active')) {
+                closeChapterDropdownList();
+                return;
+            }
+
+            const chapters = getChaptersForCurrentSubject();
+            if (chapters.length === 0) {
+                showToast("ℹ️ No saved chapters for this subject yet.");
+                return;
+            }
+
+            dropdown.innerHTML = chapters.map(c => `<div class="suggestion-item" onclick="selectChapterSuggestion('${c.replace(/'/g, "\\'")}')">${c}</div>`).join('');
+            dropdown.classList.add('active');
+        }
+
+        function selectChapterSuggestion(chapterName) {
+            document.getElementById('chapter').value = chapterName;
+            closeChapterDropdownList();
+        }
+
+        function closeChapterDropdownList() {
+            const dropdown = document.getElementById('chapterSuggestionsList');
+            if (dropdown) dropdown.classList.remove('active');
+        }
+
+        // Close dropdown when clicking anywhere else on the screen
+        function handleBodyClick(e) {
+            if (!e.target.closest('.chapter-input-container')) {
+                closeChapterDropdownList();
+            }
+        }
+
         document.getElementById('studyForm').addEventListener('submit', (e) => {
             e.preventDefault();
             const subject = document.getElementById('subject').value;
             const chapter = document.getElementById('chapter').value.trim();
             const topics = document.getElementById('topics').value.trim();
             const todayStr = getFormattedDate(new Date());
-
             const revisions = REVISION_INTERVALS.map(days => ({
                 intervalDays: days,
                 date: addDays(todayStr, days),
                 completed: false
             }));
-
-            const newItem = {
-                id: Date.now(),
-                subject,
-                chapter,
-                topics,
-                dateAdded: todayStr,
-                revisions
-            };
-
+            const newItem = { id: Date.now(), subject, chapter, topics, dateAdded: todayStr, revisions };
             studyData.push(newItem);
             saveData();
             updateStreaks('add');
             e.target.reset();
             document.getElementById('topics').style.height = '48px';
             showToast("✨ Topic saved successfully!");
-            setupDatalist();
             updateDashboard();
         });
 
@@ -971,12 +1075,6 @@
             localStorage.setItem(STORAGE_KEY, JSON.stringify(studyData));
             renderRevisions();
             updateDashboard();
-        }
-
-        function setupDatalist() {
-            const datalist = document.getElementById('chapterSuggestions');
-            const chapters = [...new Set(studyData.map(i => i.chapter))];
-            datalist.innerHTML = chapters.map(c => `<option value="${c}">`).join('');
         }
 
         function renderRevisions() {
@@ -1002,19 +1100,16 @@
             });
 
             if (dueItems.length === 0) {
-                revList.innerHTML = `<div style="text-align:center; padding:30px 10px; color:var(--text-muted); font-weight:700;"> 🎉 All caught up! No revisions pending for today. </div>`;
+                revList.innerHTML = `<div style="text-align:center; padding:30px 10px; color:var(--text-muted); font-weight:700;"> 🎉 All caught up!<br>No revisions pending for today. </div>`;
                 return;
             }
 
             revList.innerHTML = dueItems.map(d => `
                 <div class="revision-card ${d.isLate ? 'late' : ''}">
                     <div class="revision-info">
-                        <div class="revision-title">${d.chapter} <span style="color:var(--neon-blue); font-size:0.75rem;">(${d.subject})</span></div>
+                        <div class="revision-title">${d.chapter} ${d.isLate ? '<span class="late-badge">OVERDUE</span>' : ''}</div>
                         <div class="revision-topics">${d.topics}</div>
-                        <div class="revision-date">
-                            Revision: Day ${d.intervalDays} (${d.dueDate})
-                            ${d.isLate ? '<span class="late-badge">Overdue</span>' : ''}
-                        </div>
+                        <div class="revision-date">📅 Due: ${d.dueDate} (${d.intervalDays} Days Rev)</div>
                     </div>
                     <button class="circle-check-btn ${d.isLate ? 'late-btn' : ''}" onclick="completeRevision(${d.itemId}, ${d.revIndex})">✓</button>
                 </div>
@@ -1066,8 +1161,7 @@
             });
 
             const uniqueChapters = [...new Set(filtered.map(i => i.chapter))];
-
-            if(uniqueChapters.length === 0) {
+            if (uniqueChapters.length === 0) {
                 container.innerHTML = `<div style="text-align:center; padding:30px; color:var(--text-muted); font-weight:700;">No chapters found in ${currentActiveSubject}.</div>`;
                 return;
             }
@@ -1075,12 +1169,7 @@
             container.innerHTML = uniqueChapters.map(ch => {
                 const escapedCh = ch.replace(/'/g, "\\'");
                 return `
-                    <div class="chapter-card-item" 
-                         onclick="openChapterPage('${escapedCh}')"
-                         oncontextmenu="event.preventDefault(); openActionModal('chapter', '${escapedCh}')"
-                         ontouchstart="handleTouchStart(event, 'chapter', '${escapedCh}')"
-                         ontouchend="handleTouchEnd()"
-                         ontouchmove="handleTouchCancel()">
+                    <div class="chapter-card-item" onclick="openChapterPage('${escapedCh}')" oncontextmenu="event.preventDefault(); openActionModal('chapter', '${escapedCh}')">
                         <span>📖 ${ch}</span>
                         <span style="color:var(--neon-blue); font-size:0.8rem;">→</span>
                     </div>
@@ -1100,65 +1189,43 @@
         function renderChapterTopics() {
             const container = document.getElementById('chapterTopicList');
             const items = studyData.filter(i => i.chapter === currentActiveChapter);
-            
             if (items.length === 0) {
                 container.innerHTML = `<div style="text-align:center; padding:30px; color:var(--text-muted); font-weight:700;">No topics found in this chapter.</div>`;
                 return;
             }
-
             container.innerHTML = items.map(item => `
-                <div class="topic-log-card" 
-                     onclick="openActionModal('topic', ${item.id})"
-                     oncontextmenu="event.preventDefault(); openActionModal('topic', ${item.id})"
-                     ontouchstart="handleTouchStart(event, 'topic', ${item.id})"
-                     ontouchend="handleTouchEnd()"
-                     ontouchmove="handleTouchCancel()">
+                <div class="topic-log-card" onclick="openActionModal('topic', ${item.id})" oncontextmenu="event.preventDefault(); openActionModal('topic', ${item.id})">
                     <div style="font-weight:800; margin-bottom:4px;">${item.topics}</div>
-                    <div style="font-size:0.75rem; color:var(--text-muted); font-weight:700;">Added on: ${item.dateAdded}</div>
+                    <div style="font-size:0.75rem; color:var(--text-muted);">Added on: ${item.dateAdded} | Subject: ${item.subject}</div>
                 </div>
             `).join('');
         }
 
-        let touchTimer = null;
-        function handleTouchStart(e, type, targetVal) {
-            touchTimer = setTimeout(() => {
-                if (navigator.vibrate) navigator.vibrate(50);
-                openActionModal(type, targetVal);
-            }, 500);
-        }
-
-        function handleTouchEnd() { clearTimeout(touchTimer); }
-        function handleTouchCancel() { clearTimeout(touchTimer); }
-
-        let activeTargetType = null;
+        let activeTargetType = '';
         let activeTargetVal = null;
 
-        function openActionModal(type, targetVal) {
+        function openActionModal(type, val) {
             activeTargetType = type;
-            activeTargetVal = targetVal;
-
+            activeTargetVal = val;
             const titleEl = document.getElementById('actionModalTitle');
             const descEl = document.getElementById('actionModalDesc');
 
             if (type === 'chapter') {
-                titleEl.innerText = "📖 Manage Chapter";
-                descEl.innerText = `Edit or delete chapter: "${targetVal}"`;
+                titleEl.innerText = `Manage Chapter: ${val}`;
+                descEl.innerText = "Choose an action for this chapter across all logs.";
             } else {
-                const topicItem = studyData.find(i => i.id === targetVal);
-                titleEl.innerText = "📝 Manage Topic";
-                descEl.innerText = topicItem ? `Manage topic: "${topicItem.topics}"` : "Edit or delete this topic";
+                titleEl.innerText = "Manage Topic Log";
+                descEl.innerText = "Choose an action for this specific study log entry.";
             }
 
             document.getElementById('btnActionEdit').onclick = () => {
                 closeModal('actionModal');
                 openEditModal();
             };
-
             document.getElementById('btnActionDelete').onclick = () => {
                 closeModal('actionModal');
                 openConfirmModal();
             };
-
             openModal('actionModal');
         }
 
@@ -1181,7 +1248,6 @@
             document.getElementById('btnSaveEdit').onclick = () => {
                 const newVal = inputEl.value.trim();
                 if (!newVal) return;
-
                 if (activeTargetType === 'chapter') {
                     const oldCh = activeTargetVal;
                     studyData.forEach(item => {
@@ -1195,46 +1261,33 @@
                     if (item) item.topics = newVal;
                     showToast("✏️ Topic updated!");
                 }
-
                 saveData();
-                setupDatalist();
                 closeModal('editModal');
-
                 if (document.getElementById('chapterPage').classList.contains('active')) {
                     renderChapterTopics();
                 }
-                if (document.getElementById('subjectPage').classList.contains('active')) {
-                    renderSubjectChapters();
-                }
             };
-
             openModal('editModal');
         }
 
         function openConfirmModal() {
             const descEl = document.getElementById('confirmDeleteDesc');
-
             if (activeTargetType === 'chapter') {
-                descEl.innerText = `Warning: Deleting chapter "${activeTargetVal}" will remove ALL topics inside it!`;
+                descEl.innerText = `Are you sure you want to delete chapter '${activeTargetVal}' and all its associated topics?`;
             } else {
-                descEl.innerText = `Are you sure you want to delete this topic only?`;
+                descEl.innerText = "Are you sure you want to delete this study log entry?";
             }
 
             document.getElementById('btnConfirmDelete').onclick = () => {
                 if (activeTargetType === 'chapter') {
-                    const chName = activeTargetVal;
-                    studyData = studyData.filter(i => i.chapter !== chName);
+                    studyData = studyData.filter(i => i.chapter !== activeTargetVal);
                     saveData();
-                    setupDatalist();
                     closeModal('confirmModal');
                     closeChapterPage();
-                    renderSubjectChapters();
                     showToast("🗑️ Chapter deleted!");
                 } else {
-                    const id = activeTargetVal;
-                    studyData = studyData.filter(i => i.id !== id);
+                    studyData = studyData.filter(i => i.id !== activeTargetVal);
                     saveData();
-                    setupDatalist();
                     closeModal('confirmModal');
                     if (document.getElementById('chapterPage').classList.contains('active')) {
                         renderChapterTopics();
@@ -1242,7 +1295,6 @@
                     showToast("🗑️ Topic deleted!");
                 }
             };
-
             openModal('confirmModal');
         }
 
