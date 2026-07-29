@@ -7,6 +7,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        /* ====== All existing styles remain exactly the same ====== */
         :root {
             --bg-color: #0b1120;
             --card-bg: #151d30;
@@ -75,6 +76,12 @@
             -webkit-text-fill-color: transparent;
         }
 
+        .nav-right-controls {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
         .streak-badge {
             display: flex;
             align-items: center;
@@ -96,6 +103,34 @@
             background: rgba(56, 189, 248, 0.1);
             border: 1px solid var(--neon-blue);
             color: var(--neon-blue);
+        }
+
+        .notif-bell {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            font-size: 1.3rem;
+            cursor: pointer;
+            transition: var(--transition-smooth);
+            position: relative;
+        }
+        .notif-bell:hover {
+            color: var(--neon-blue);
+        }
+        .notif-bell .badge {
+            position: absolute;
+            top: -4px;
+            right: -6px;
+            background: var(--neon-red);
+            color: white;
+            font-size: 0.55rem;
+            font-weight: 800;
+            padding: 2px 5px;
+            border-radius: 10px;
+            display: none;
+        }
+        .notif-bell .badge.show {
+            display: inline-block;
         }
 
         .sidebar-overlay {
@@ -149,6 +184,7 @@
             padding: 12px 14px;
             border-radius: 12px;
             transition: var(--transition-smooth);
+            cursor: pointer;
         }
         .sidebar-links a:hover {
             background: rgba(255, 255, 255, 0.06);
@@ -174,6 +210,37 @@
             margin: 20px auto;
             padding: 0 16px;
             flex: 1;
+        }
+
+        .alert-banner {
+            background: rgba(255, 75, 75, 0.12);
+            border: 1px solid var(--neon-red);
+            border-radius: 14px;
+            padding: 12px 16px;
+            margin-bottom: 18px;
+            display: none;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            font-weight: 700;
+            font-size: 0.9rem;
+        }
+        .alert-banner.show {
+            display: flex;
+        }
+        .alert-banner .msg {
+            color: var(--neon-red);
+        }
+        .alert-banner .dismiss-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            font-size: 1.2rem;
+            cursor: pointer;
+            padding: 0 4px;
+        }
+        .alert-banner .dismiss-btn:hover {
+            color: var(--text-main);
         }
 
         .dashboard-card {
@@ -784,6 +851,75 @@
             text-decoration: none;
             font-weight: 800;
         }
+
+        /* ====== New/Enhanced styles for Alert Settings ====== */
+        .setting-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+        .setting-row label {
+            min-width: 80px;
+            margin: 0;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            font-weight: 800;
+        }
+        .setting-row select,
+        .setting-row input {
+            flex: 1;
+            padding: 10px;
+            background: var(--input-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 10px;
+            color: var(--text-main);
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        .sound-preview-btn {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            color: var(--neon-blue);
+            border-radius: 10px;
+            padding: 0 14px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            height: 42px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition-smooth);
+        }
+        .sound-preview-btn:hover {
+            background: rgba(56, 189, 248, 0.1);
+            border-color: var(--neon-blue);
+        }
+
+        /* Time input - make clock icon visible */
+        #alertTimeInput {
+            color: var(--neon-blue);
+            background: var(--input-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 10px;
+            padding: 10px;
+            font-weight: 600;
+            flex: 1;
+        }
+        #alertTimeInput::-webkit-calendar-picker-indicator {
+            filter: invert(1) brightness(1.5);
+            cursor: pointer;
+        }
+        /* For Firefox (partial support) */
+        #alertTimeInput::-moz-calendar-picker-indicator {
+            filter: invert(1) brightness(1.5);
+            cursor: pointer;
+        }
+        /* For Edge/Chromium fallback */
+        #alertTimeInput::-webkit-datetime-edit {
+            color: var(--neon-blue);
+        }
     </style>
 </head>
 <body onclick="handleBodyClick(event)">
@@ -794,6 +930,10 @@
             <div class="brand-title">REVISION CENTRE</div>
         </div>
         <div class="nav-right-controls">
+            <button class="notif-bell" id="notifBell" onclick="manualCheck()" title="Check pending revisions">
+                <i class="fa-regular fa-bell"></i>
+                <span class="badge" id="notifBadge">0</span>
+            </button>
             <div class="streak-badge add-mode" id="streakBadge" onclick="openStreakModal()">
                 ⚡ <span id="streakDisplayVal">0</span> Days
             </div>
@@ -808,6 +948,8 @@
             <li><a href="#" onclick="openSubjectPage('Physics'); toggleSidebar();">⚛️ Physics</a></li>
             <li><a href="#" onclick="openSubjectPage('Chemistry'); toggleSidebar();">🧪 Chemistry</a></li>
             <li><a href="#" onclick="openSubjectPage('Maths'); toggleSidebar();">📐 Maths</a></li>
+            <div class="sidebar-divider"></div>
+            <li><a href="#" onclick="openAlertSettings(); toggleSidebar();">🔔 Alert Settings</a></li>
             <div class="sidebar-divider"></div>
             <li>
                 <a href="https://wa.me/919278351830?text=Hello!" target="_blank" style="color:#25D366;">
@@ -831,6 +973,12 @@
     </div>
 
     <div class="container">
+        <!-- Alert Banner -->
+        <div class="alert-banner" id="alertBanner">
+            <span class="msg"><i class="fa-regular fa-clock"></i> <span id="alertMsg">⏰ It's past your alert time! You have pending revisions.</span></span>
+            <button class="dismiss-btn" onclick="dismissAlert()">&times;</button>
+        </div>
+
         <div class="dashboard-card">
             <div class="dashboard-top">
                 <div class="circle-box">
@@ -943,6 +1091,35 @@
         </div>
     </div>
 
+    <!-- ========== ALERT SETTINGS MODAL (UPDATED) ========== -->
+    <div class="modal-overlay" id="alertSettingsModal" onclick="closeModalOnOuter(event, 'alertSettingsModal')">
+        <div class="modal-body">
+            <div class="popup-title">🔔 Alert Settings</div>
+            <div class="popup-desc" style="margin-bottom:12px;">Customise your daily reminder.</div>
+            <div class="setting-row">
+                <label>Sound</label>
+                <div style="display: flex; gap: 8px; flex: 1; align-items: center;">
+                    <select id="alertSoundSelect" style="flex: 1;">
+                        <option value="default">Default (Soft)</option>
+                        <option value="bell">Bell</option>
+                        <option value="chime">Chime</option>
+                        <option value="buzzer">Buzzer</option>
+                    </select>
+                    <button type="button" class="sound-preview-btn" onclick="previewSound()" title="Preview sound">▶</button>
+                </div>
+            </div>
+            <div class="setting-row">
+                <label>Time</label>
+                <input type="time" id="alertTimeInput" value="22:00" />
+            </div>
+            <div class="popup-actions">
+                <button class="popup-btn cancel" onclick="closeModal('alertSettingsModal')">Cancel</button>
+                <button class="popup-btn edit" id="btnSaveAlertSettings">💾 Save Settings</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- other modals -->
     <div class="fullscreen-page" id="subjectPage">
         <div class="fullscreen-header">
             <button class="back-btn" onclick="closeSubjectPage()">← Back</button>
@@ -1044,8 +1221,11 @@
     </footer>
 
     <script>
+        // ========== CONSTANTS & STATE ==========
         const STORAGE_KEY = "spaced_repetition_data";
         const STREAK_KEY = "spaced_repetition_streaks";
+        const ALERT_SETTINGS_KEY = "alert_settings";
+        const NOTIF_KEY = "last_notification_date";
         const REVISION_INTERVALS = [1, 3, 7, 21];
 
         let studyData = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
@@ -1053,12 +1233,245 @@
         let currentActiveSubject = '';
         let currentChemSubFilter = 'All';
         let currentActiveChapter = '';
+        let alertDismissed = false;
 
+        // ========== ALERT SETTINGS ==========
+        function loadAlertSettings() {
+            const defaultSettings = { sound: 'default', time: '22:00' };
+            const stored = localStorage.getItem(ALERT_SETTINGS_KEY);
+            if (stored) {
+                try {
+                    return { ...defaultSettings, ...JSON.parse(stored) };
+                } catch { return defaultSettings; }
+            }
+            return defaultSettings;
+        }
+
+        function saveAlertSettings(settings) {
+            localStorage.setItem(ALERT_SETTINGS_KEY, JSON.stringify(settings));
+            document.getElementById('alertSoundSelect').value = settings.sound;
+            document.getElementById('alertTimeInput').value = settings.time;
+        }
+
+        let alertSettings = loadAlertSettings();
+
+        function openAlertSettings() {
+            document.getElementById('alertSoundSelect').value = alertSettings.sound;
+            document.getElementById('alertTimeInput').value = alertSettings.time;
+            openModal('alertSettingsModal');
+        }
+
+        // Preview sound
+        function previewSound() {
+            const sound = document.getElementById('alertSoundSelect').value;
+            playAlertSound(sound);
+        }
+
+        document.getElementById('btnSaveAlertSettings').addEventListener('click', () => {
+            const sound = document.getElementById('alertSoundSelect').value;
+            const time = document.getElementById('alertTimeInput').value;
+            if (!time) {
+                showToast('⏰ Please select a valid time.');
+                return;
+            }
+            alertSettings = { sound, time };
+            saveAlertSettings(alertSettings);
+            closeModal('alertSettingsModal');
+            showToast('✅ Alert settings saved!');
+        });
+
+        // ========== SOUND GENERATOR ==========
+        let currentAudioContext = null;
+        let currentOscillator = null;
+        let currentGain = null;
+
+        function playAlertSound(soundType) {
+            try {
+                if (currentOscillator) {
+                    try { currentOscillator.stop(); } catch (e) {}
+                    currentOscillator = null;
+                }
+                if (currentGain) {
+                    currentGain.disconnect();
+                    currentGain = null;
+                }
+                if (currentAudioContext) {
+                    currentAudioContext.close();
+                    currentAudioContext = null;
+                }
+
+                const ctx = new (window.AudioContext || window.webkitAudioContext)();
+                currentAudioContext = ctx;
+
+                const gain = ctx.createGain();
+                gain.gain.value = 0.3;
+                currentGain = gain;
+                gain.connect(ctx.destination);
+
+                let oscillator = ctx.createOscillator();
+                currentOscillator = oscillator;
+                oscillator.connect(gain);
+
+                switch (soundType) {
+                    case 'bell':
+                        oscillator.type = 'sine';
+                        oscillator.frequency.setValueAtTime(800, ctx.currentTime);
+                        oscillator.frequency.exponentialRampToValueAtTime(1200, ctx.currentTime + 0.1);
+                        oscillator.frequency.exponentialRampToValueAtTime(600, ctx.currentTime + 0.3);
+                        break;
+                    case 'chime':
+                        oscillator.type = 'sine';
+                        oscillator.frequency.setValueAtTime(523, ctx.currentTime);
+                        oscillator.frequency.setValueAtTime(659, ctx.currentTime + 0.15);
+                        oscillator.frequency.setValueAtTime(784, ctx.currentTime + 0.3);
+                        break;
+                    case 'buzzer':
+                        oscillator.type = 'square';
+                        oscillator.frequency.setValueAtTime(200, ctx.currentTime);
+                        break;
+                    default:
+                        oscillator.type = 'sine';
+                        oscillator.frequency.setValueAtTime(440, ctx.currentTime);
+                        oscillator.frequency.exponentialRampToValueAtTime(660, ctx.currentTime + 0.3);
+                        break;
+                }
+
+                oscillator.start(ctx.currentTime);
+                oscillator.stop(ctx.currentTime + 4);
+                gain.gain.setValueAtTime(0.3, ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 3.8);
+
+                setTimeout(() => {
+                    try { oscillator.stop(); } catch (e) {}
+                    try { ctx.close(); } catch (e) {}
+                }, 4500);
+
+            } catch (e) {
+                console.warn('Sound could not be played:', e);
+            }
+        }
+
+        // ========== ALERT CHECK LOGIC ==========
+        function getPendingRevisionsToday() {
+            const todayStr = getFormattedDate(new Date());
+            let pending = [];
+            studyData.forEach(item => {
+                item.revisions.forEach((rev, idx) => {
+                    if (!rev.completed && rev.date === todayStr) {
+                        pending.push({ item, revIndex: idx, rev });
+                    }
+                });
+            });
+            return pending;
+        }
+
+        function getTodayStr() {
+            return getFormattedDate(new Date());
+        }
+
+        function hasNotifiedToday() {
+            const last = localStorage.getItem(NOTIF_KEY);
+            return last === getTodayStr();
+        }
+
+        function setNotifiedToday() {
+            localStorage.setItem(NOTIF_KEY, getTodayStr());
+        }
+
+        function isAlertTimeReached() {
+            const now = new Date();
+            const [hours, minutes] = alertSettings.time.split(':').map(Number);
+            const target = new Date(now);
+            target.setHours(hours, minutes, 0, 0);
+            return now >= target;
+        }
+
+        function checkAndNotify(manual = false) {
+            const pending = getPendingRevisionsToday();
+            const count = pending.length;
+            const timeReached = isAlertTimeReached();
+
+            updateBellBadge();
+
+            if (count === 0) {
+                document.getElementById('alertBanner').classList.remove('show');
+                alertDismissed = false;
+                return;
+            }
+
+            if (timeReached && (!hasNotifiedToday() || manual)) {
+                playAlertSound(alertSettings.sound);
+
+                if ('Notification' in window && Notification.permission === 'granted') {
+                    new Notification('⏰ Revision Reminder', {
+                        body: `You have ${count} pending revision${count > 1 ? 's' : ''} for today. Don't forget to complete them!`,
+                        icon: '📚'
+                    });
+                } else {
+                    showToast(`⚠️ ${count} revision${count > 1 ? 's' : ''} pending! Time to revise.`);
+                }
+                setNotifiedToday();
+
+                if (!alertDismissed) {
+                    const banner = document.getElementById('alertBanner');
+                    document.getElementById('alertMsg').innerHTML =
+                        `⏰ It's past your alert time! You have <strong>${count}</strong> pending revision${count > 1 ? 's' : ''}.`;
+                    banner.classList.add('show');
+                }
+            } else if (timeReached && alertDismissed) {
+                // keep hidden
+            } else if (!timeReached) {
+                document.getElementById('alertBanner').classList.remove('show');
+                alertDismissed = false;
+            }
+        }
+
+        function updateBellBadge() {
+            const pending = getPendingRevisionsToday();
+            const count = pending.length;
+            const badge = document.getElementById('notifBadge');
+            if (count > 0) {
+                badge.innerText = count;
+                badge.classList.add('show');
+            } else {
+                badge.classList.remove('show');
+            }
+        }
+
+        function manualCheck() {
+            checkAndNotify(true);
+            const count = getPendingRevisionsToday().length;
+            showToast(`🔍 Checked – ${count} pending revision${count !== 1 ? 's' : ''} today.`);
+        }
+
+        function dismissAlert() {
+            document.getElementById('alertBanner').classList.remove('show');
+            alertDismissed = true;
+        }
+
+        function startAlertChecker() {
+            setInterval(() => {
+                checkAndNotify(false);
+                updateDashboard();
+            }, 30000);
+            setTimeout(() => checkAndNotify(false), 2000);
+        }
+
+        // ========== EXISTING FUNCTIONS ==========
         window.addEventListener('DOMContentLoaded', () => {
             checkAndResetStreaks();
             renderRevisions();
             updateDashboard();
+            requestNotificationPermission();
+            startAlertChecker();
+            updateBellBadge();
         });
+
+        function requestNotificationPermission() {
+            if ('Notification' in window && Notification.permission === 'default') {
+                Notification.requestPermission();
+            }
+        }
 
         function toggleSidebar() {
             document.getElementById('sidebar').classList.toggle('active');
@@ -1136,10 +1549,6 @@
             document.getElementById('revStreakVal').innerText = `${streaks.rev.count} Days`;
         }
 
-        // ============================================================
-        // FIX: updateDashboard() now counts ONLY today's revisions for
-        // the Due/Done bars. Overdue tasks are shown separately.
-        // ============================================================
         function updateDashboard() {
             const todayStr = getFormattedDate(new Date());
             let totalDueToday = 0;
@@ -1155,18 +1564,13 @@
             studyData.forEach(item => {
                 let mainSub = item.subject.startsWith('Chemistry') ? 'Chemistry' : item.subject;
                 item.revisions.forEach((rev) => {
-                    // ---- Due today: only rev.date === todayStr ----
                     if (rev.date === todayStr) {
                         totalDueToday++;
                         if (subjectStats[mainSub]) subjectStats[mainSub].due++;
                     }
-
-                    // ---- Overdue: past due & not completed ----
                     if (rev.date < todayStr && !rev.completed) {
                         overdueCount++;
                     }
-
-                    // ---- Done today: completed today ----
                     if (rev.completed && rev.date === todayStr) {
                         totalDoneToday++;
                         if (subjectStats[mainSub]) subjectStats[mainSub].done++;
@@ -1174,19 +1578,16 @@
                 });
             });
 
-            // Overall progress circle
             const pct = totalDueToday > 0 ? Math.round((totalDoneToday / totalDueToday) * 100) : 100;
             document.getElementById('overallPercent').innerText = `${pct}%`;
             const maxOffset = 283;
             const offset = maxOffset - (pct / 100) * maxOffset;
             document.getElementById('progressCircle').style.strokeDashoffset = offset;
 
-            // Stats
             document.getElementById('statTotal').innerText = totalDueToday;
             document.getElementById('statDone').innerText = totalDoneToday;
             document.getElementById('statPending').innerText = overdueCount;
 
-            // Subject bars
             ['Physics', 'Chemistry', 'Maths'].forEach(s => {
                 const stat = subjectStats[s];
                 const prefix = s === 'Physics' ? 'phy' : s === 'Chemistry' ? 'chem' : 'math';
@@ -1194,6 +1595,11 @@
                 const barPct = stat.due > 0 ? Math.round((stat.done / stat.due) * 100) : 100;
                 document.getElementById(`${prefix}Bar`).style.width = `${barPct}%`;
             });
+
+            updateBellBadge();
+            if (isAlertTimeReached()) {
+                checkAndNotify(false);
+            }
         }
 
         function handleSubjectChange() {
@@ -1339,6 +1745,7 @@
                 saveData();
                 updateStreaks('rev');
                 showToast("🎉 Revision marked complete!");
+                checkAndNotify(false);
             }
         }
 
