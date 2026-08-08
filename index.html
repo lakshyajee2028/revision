@@ -6,11 +6,10 @@
     <title>PrepTracker Pro - Revision Centre</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js">
     </script>
     <style>
-        /* ====== All existing styles remain exactly the same ====== */
+        /* ====== BASE STYLES (unchanged) ====== */
         :root {
             --bg-color: #0b1120;
             --card-bg: #151d30;
@@ -27,7 +26,6 @@
             --card-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
             --transition-smooth: all 0.2s ease;
         }
-
         * {
             box-sizing: border-box;
             margin: 0;
@@ -35,7 +33,6 @@
             font-family: 'Plus Jakarta Sans', sans-serif;
             -webkit-tap-highlight-color: transparent;
         }
-
         body {
             background-color: var(--bg-color);
             color: var(--text-main);
@@ -44,7 +41,6 @@
             flex-direction: column;
             overflow-x: hidden;
         }
-
         .navbar {
             display: flex;
             align-items: center;
@@ -56,13 +52,11 @@
             top: 0;
             z-index: 100;
         }
-
         .nav-left {
             display: flex;
             align-items: center;
             gap: 12px;
         }
-
         .menu-btn {
             background: transparent;
             border: none;
@@ -70,7 +64,6 @@
             font-size: 1.5rem;
             cursor: pointer;
         }
-
         .brand-title {
             font-size: 1.15rem;
             font-weight: 800;
@@ -78,13 +71,11 @@
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
-
         .nav-right-controls {
             display: flex;
             align-items: center;
             gap: 10px;
         }
-
         .streak-badge {
             display: flex;
             align-items: center;
@@ -95,19 +86,16 @@
             font-size: 0.8rem;
             cursor: pointer;
         }
-
         .streak-badge.add-mode {
             background: rgba(0, 255, 136, 0.1);
             border: 1px solid var(--neon-green);
             color: var(--neon-green);
         }
-
         .streak-badge.rev-mode {
             background: rgba(56, 189, 248, 0.1);
             border: 1px solid var(--neon-blue);
             color: var(--neon-blue);
         }
-
         .notif-bell {
             background: transparent;
             border: none;
@@ -135,8 +123,6 @@
         .notif-bell .badge.show {
             display: inline-block;
         }
-
-        /* ====== NEW: Graph button in navbar ====== */
         .graph-btn {
             background: transparent;
             border: none;
@@ -151,7 +137,6 @@
             color: var(--neon-green);
             background: rgba(0, 255, 136, 0.08);
         }
-
         .sidebar-overlay {
             position: fixed;
             inset: 0;
@@ -166,7 +151,6 @@
             opacity: 1;
             pointer-events: auto;
         }
-
         .sidebar {
             position: fixed;
             top: 0;
@@ -184,7 +168,6 @@
         .sidebar.active {
             transform: translateX(280px);
         }
-
         .sidebar-links {
             list-style: none;
             margin-top: 20px;
@@ -209,7 +192,6 @@
             background: rgba(255, 255, 255, 0.06);
             color: var(--neon-blue);
         }
-
         .sidebar-icon-svg {
             width: 20px;
             height: 20px;
@@ -222,7 +204,6 @@
             opacity: 0.2;
             margin: 15px 0;
         }
-
         .container {
             max-width: 600px;
             width: 100%;
@@ -230,7 +211,6 @@
             padding: 0 16px;
             flex: 1;
         }
-
         .alert-banner {
             background: rgba(255, 75, 75, 0.12);
             border: 1px solid var(--neon-red);
@@ -261,7 +241,6 @@
         .alert-banner .dismiss-btn:hover {
             color: var(--text-main);
         }
-
         .dashboard-card {
             background: var(--card-bg);
             border: 1px solid var(--card-border);
@@ -269,44 +248,37 @@
             padding: 20px;
             margin-bottom: 20px;
         }
-
         .dashboard-top {
             display: flex;
             align-items: center;
             justify-content: space-between;
             gap: 15px;
         }
-
         .circle-box {
             position: relative;
             width: 100px;
             height: 100px;
             flex-shrink: 0;
         }
-
         .circle-box svg {
             width: 100px;
             height: 100px;
             transform: rotate(-90deg);
         }
-
         .circle-box circle {
             fill: none;
             stroke-width: 8;
             stroke-linecap: round;
         }
-
         .circle-bg {
             stroke: rgba(255, 255, 255, 0.08);
         }
-
         .circle-bar {
             stroke: var(--neon-green);
             stroke-dasharray: 283;
             stroke-dashoffset: 283;
             transition: stroke-dashoffset 0.4s ease;
         }
-
         .circle-text {
             position: absolute;
             top: 50%;
@@ -314,27 +286,23 @@
             transform: translate(-50%, -50%);
             text-align: center;
         }
-
         .circle-text .percent {
             font-size: 1.1rem;
             font-weight: 800;
             color: #fff;
         }
-
         .circle-text .label {
             font-size: 0.55rem;
             color: var(--text-muted);
             text-transform: uppercase;
             font-weight: 700;
         }
-
         .stats-grid {
             display: flex;
             flex-direction: column;
             gap: 6px;
             width: 100%;
         }
-
         .stat-box {
             background: rgba(0, 0, 0, 0.2);
             border: 1px solid rgba(255, 255, 255, 0.05);
@@ -346,24 +314,20 @@
             font-size: 0.8rem;
             font-weight: 700;
         }
-
         .stat-box span {
             color: var(--text-muted);
             display: flex;
             align-items: center;
             gap: 6px;
         }
-
         .subjects-progress {
             margin-top: 15px;
             padding-top: 12px;
             border-top: 1px solid rgba(255, 255, 255, 0.08);
         }
-
         .subj-item {
             margin-bottom: 10px;
         }
-
         .subj-header {
             display: flex;
             justify-content: space-between;
@@ -371,21 +335,18 @@
             font-weight: 700;
             margin-bottom: 4px;
         }
-
         .subj-bar-bg {
             height: 6px;
             background: rgba(255, 255, 255, 0.08);
             border-radius: 10px;
             overflow: hidden;
         }
-
         .subj-bar-fill {
             height: 100%;
             width: 0%;
             background: linear-gradient(90deg, var(--neon-blue), var(--neon-green));
             border-radius: 10px;
         }
-
         .slider-card-wrapper {
             background: var(--card-bg);
             border: 1px solid var(--card-border);
@@ -393,13 +354,11 @@
             overflow: hidden;
             margin-bottom: 25px;
         }
-
         .card-tabs {
             display: flex;
             border-bottom: 1px solid var(--card-border);
             background: rgba(0, 0, 0, 0.2);
         }
-
         .tab-btn {
             flex: 1;
             padding: 14px;
@@ -411,19 +370,16 @@
             cursor: pointer;
             transition: var(--transition-smooth);
         }
-
         .tab-btn.active.add-tab {
             color: var(--neon-green);
             background: rgba(0, 255, 136, 0.08);
             border-bottom: 2px solid var(--neon-green);
         }
-
         .tab-btn.active.rev-tab {
             color: var(--neon-blue);
             background: rgba(56, 189, 248, 0.08);
             border-bottom: 2px solid var(--neon-blue);
         }
-
         .slider-content {
             display: flex;
             width: 200%;
@@ -433,7 +389,6 @@
             width: 50%;
             padding: 20px;
         }
-
         #revisionList {
             max-height: 400px;
             overflow-y: auto;
@@ -446,7 +401,6 @@
             background: var(--card-border);
             border-radius: 4px;
         }
-
         .form-group {
             margin-bottom: 14px;
         }
@@ -458,7 +412,6 @@
             color: var(--text-muted);
             text-transform: uppercase;
         }
-
         input,
         select,
         textarea {
@@ -472,20 +425,17 @@
             outline: none;
             font-weight: 600;
         }
-
         textarea {
             resize: none;
             overflow-y: hidden;
             min-height: 48px;
             line-height: 1.4;
         }
-
         input:focus,
         select:focus,
         textarea:focus {
             border-color: var(--neon-blue);
         }
-
         .chapter-input-container {
             position: relative;
             display: flex;
@@ -507,7 +457,6 @@
         .chapter-dropdown-btn:hover {
             color: var(--neon-blue);
         }
-
         .custom-suggestions-dropdown {
             position: absolute;
             top: calc(100% + 4px);
@@ -537,7 +486,6 @@
             background: rgba(56, 189, 248, 0.1);
             color: var(--neon-blue);
         }
-
         .btn-neon {
             width: 100%;
             background: linear-gradient(135deg, var(--neon-blue), #00b862);
@@ -548,7 +496,6 @@
             font-weight: 800;
             cursor: pointer;
         }
-
         .section-title {
             font-size: 0.85rem;
             font-weight: 800;
@@ -556,14 +503,12 @@
             margin-bottom: 12px;
             text-transform: uppercase;
         }
-
         .subject-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             gap: 12px;
             margin-bottom: 25px;
         }
-
         .subject-card-btn {
             background: var(--card-bg);
             border: 1px solid var(--card-border);
@@ -572,19 +517,45 @@
             text-align: center;
             cursor: pointer;
             transition: var(--transition-smooth);
+            position: relative;
         }
         .subject-card-btn:hover {
             border-color: var(--neon-blue);
             transform: translateY(-2px);
         }
-
-        .sub-icon {
+        .subject-card-btn .sub-icon {
             font-size: 1.5rem;
             margin-bottom: 6px;
         }
-        .sub-name {
+        .subject-card-btn .sub-name {
             font-size: 0.85rem;
             font-weight: 800;
+            display: block;
+        }
+        .subject-card-btn .sub-progress-btn {
+            position: absolute;
+            top: 6px;
+            right: 6px;
+            background: rgba(56, 189, 248, 0.12);
+            border: 1px solid var(--neon-blue);
+            color: var(--neon-blue);
+            border-radius: 20px;
+            padding: 2px 10px;
+            font-size: 0.6rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: var(--transition-smooth);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            opacity: 0.7;
+        }
+        .subject-card-btn .sub-progress-btn:hover {
+            opacity: 1;
+            background: rgba(56, 189, 248, 0.25);
+        }
+        .subject-card-btn .sub-progress-btn i {
+            font-size: 0.6rem;
         }
 
         .revision-card {
@@ -598,11 +569,9 @@
             justify-content: space-between;
             gap: 12px;
         }
-
         .revision-card.late {
             border-color: var(--neon-red);
         }
-
         .revision-info {
             flex: 1;
         }
@@ -621,7 +590,6 @@
             margin-top: 4px;
             font-weight: 700;
         }
-
         .circle-check-btn {
             width: 34px;
             height: 34px;
@@ -636,7 +604,6 @@
             color: transparent;
             font-weight: 900;
         }
-
         .circle-check-btn.checked {
             background: var(--neon-green);
             border-color: var(--neon-green);
@@ -645,7 +612,6 @@
         .circle-check-btn.late-btn {
             border-color: var(--neon-red);
         }
-
         .late-badge {
             font-size: 0.65rem;
             font-weight: 800;
@@ -656,7 +622,6 @@
             border-radius: 10px;
             margin-left: 6px;
         }
-
         .fullscreen-page {
             position: fixed;
             inset: 0;
@@ -670,7 +635,6 @@
         .fullscreen-page.active {
             display: flex;
         }
-
         .fullscreen-header {
             display: flex;
             align-items: center;
@@ -679,7 +643,6 @@
             border-bottom: 1px solid var(--card-border);
             margin-bottom: 20px;
         }
-
         .back-btn {
             background: var(--card-bg);
             border: 1px solid var(--card-border);
@@ -690,14 +653,12 @@
             cursor: pointer;
             font-size: 0.85rem;
         }
-
         .sub-nav-tabs {
             display: flex;
             gap: 8px;
             margin-bottom: 20px;
             overflow-x: auto;
         }
-
         .sub-tab-btn {
             padding: 8px 14px;
             background: var(--card-bg);
@@ -709,13 +670,11 @@
             cursor: pointer;
             white-space: nowrap;
         }
-
         .sub-tab-btn.active {
             background: rgba(56, 189, 248, 0.15);
             color: var(--neon-blue);
             border-color: var(--neon-blue);
         }
-
         .chapter-card-item,
         .topic-log-card {
             background: var(--card-bg);
@@ -731,7 +690,6 @@
         .topic-log-card:hover {
             border-color: var(--neon-blue);
         }
-
         .modal-overlay {
             position: fixed;
             inset: 0;
@@ -750,7 +708,6 @@
             opacity: 1;
             pointer-events: auto;
         }
-
         .modal-body {
             background: var(--sidebar-bg);
             border: 1px solid var(--card-border);
@@ -759,7 +716,6 @@
             max-width: 420px;
             padding: 22px;
         }
-
         .popup-title {
             font-size: 1.1rem;
             font-weight: 800;
@@ -779,7 +735,6 @@
             justify-content: flex-end;
             margin-top: 15px;
         }
-
         .popup-btn {
             padding: 10px 18px;
             border-radius: 10px;
@@ -800,7 +755,6 @@
             background: var(--neon-blue);
             color: #05100a;
         }
-
         .custom-toast {
             position: fixed;
             bottom: 30px;
@@ -819,7 +773,6 @@
         .custom-toast.show {
             transform: translateX(-50%) translateY(0);
         }
-
         footer {
             text-align: center;
             padding: 22px 20px;
@@ -827,7 +780,6 @@
             margin-top: auto;
             background: var(--nav-bg);
         }
-
         .social-links {
             display: flex;
             justify-content: center;
@@ -859,7 +811,6 @@
         .social-icon.site {
             color: var(--neon-blue);
         }
-
         .footer-credit {
             font-size: 0.85rem;
             color: var(--text-muted);
@@ -870,8 +821,6 @@
             text-decoration: none;
             font-weight: 800;
         }
-
-        /* ====== New/Enhanced styles for Alert Settings ====== */
         .setting-row {
             display: flex;
             align-items: center;
@@ -915,7 +864,6 @@
             background: rgba(56, 189, 248, 0.1);
             border-color: var(--neon-blue);
         }
-
         #alertTimeInput {
             color: var(--neon-blue);
             background: var(--input-bg);
@@ -937,13 +885,45 @@
             color: var(--neon-blue);
         }
 
-        /* ====== NEW: Graph Page Styles ====== */
+        /* ====== GRAPH PAGE – CLEAN & SIMPLE ====== */
         .graph-page-wrapper {
             flex: 1;
             display: flex;
             flex-direction: column;
         }
-
+        .graph-subject-filter {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 14px;
+            align-items: center;
+        }
+        .subj-filter-btn {
+            padding: 6px 16px;
+            border-radius: 20px;
+            border: 1px solid var(--card-border);
+            background: var(--card-bg);
+            color: var(--text-muted);
+            font-weight: 700;
+            font-size: 0.78rem;
+            cursor: pointer;
+            transition: var(--transition-smooth);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .subj-filter-btn:hover {
+            border-color: var(--neon-blue);
+            color: var(--text-main);
+        }
+        .subj-filter-btn.active {
+            background: rgba(56, 189, 248, 0.15);
+            border-color: var(--neon-blue);
+            color: var(--neon-blue);
+        }
+        .subj-filter-btn .subj-icon {
+            font-size: 0.9rem;
+        }
         .graph-filter-bar {
             display: flex;
             flex-wrap: wrap;
@@ -951,7 +931,6 @@
             margin-bottom: 18px;
             align-items: center;
         }
-
         .filter-btn {
             padding: 8px 16px;
             border-radius: 20px;
@@ -972,7 +951,6 @@
             border-color: var(--neon-blue);
             color: var(--neon-blue);
         }
-
         .custom-date-range {
             display: flex;
             align-items: center;
@@ -1012,22 +990,65 @@
             background: var(--card-bg);
             border: 1px solid var(--card-border);
             border-radius: 18px;
-            padding: 20px 16px 16px 16px;
+            padding: 20px 16px 12px 16px;
             flex: 1;
-            min-height: 350px;
+            min-height: 320px;
             position: relative;
         }
         .graph-card canvas {
             width: 100% !important;
-            max-height: 420px;
+            max-height: 360px;
+            cursor: pointer;
+        }
+
+        .graph-view-toggle {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 16px;
+            padding-top: 14px;
+            border-top: 1px solid rgba(255, 255, 255, 0.06);
+        }
+        .view-toggle-btn {
+            padding: 8px 22px;
+            border-radius: 30px;
+            border: 1px solid var(--card-border);
+            background: var(--card-bg);
+            color: var(--text-muted);
+            font-weight: 700;
+            font-size: 0.78rem;
+            cursor: pointer;
+            transition: var(--transition-smooth);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .view-toggle-btn:hover {
+            border-color: var(--neon-blue);
+            color: var(--text-main);
+        }
+        .view-toggle-btn.active-combine {
+            background: rgba(0, 255, 136, 0.12);
+            border-color: var(--neon-green);
+            color: var(--neon-green);
+        }
+        .view-toggle-btn.active-log {
+            background: rgba(0, 255, 136, 0.12);
+            border-color: var(--neon-green);
+            color: var(--neon-green);
+        }
+        .view-toggle-btn.active-rev {
+            background: rgba(56, 189, 248, 0.12);
+            border-color: var(--neon-blue);
+            color: var(--neon-blue);
         }
 
         .graph-stats-row {
             display: flex;
             flex-wrap: wrap;
             gap: 16px;
-            margin-top: 16px;
-            padding-top: 14px;
+            margin-top: 14px;
+            padding-top: 12px;
             border-top: 1px solid rgba(255, 255, 255, 0.06);
             justify-content: space-around;
         }
@@ -1054,7 +1075,7 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            height: 280px;
+            height: 260px;
             color: var(--text-muted);
             font-weight: 700;
             gap: 10px;
@@ -1062,6 +1083,66 @@
         .graph-empty-msg i {
             font-size: 3rem;
             opacity: 0.3;
+        }
+
+        .subject-progress-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 18px;
+            background: rgba(56, 189, 248, 0.1);
+            border: 1px solid var(--neon-blue);
+            border-radius: 20px;
+            color: var(--neon-blue);
+            font-weight: 700;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: var(--transition-smooth);
+            margin-left: auto;
+        }
+        .subject-progress-link:hover {
+            background: rgba(56, 189, 248, 0.2);
+            transform: scale(1.02);
+        }
+
+        /* Point detail popup */
+        .point-detail-popup {
+            position: absolute;
+            background: var(--sidebar-bg);
+            border: 1px solid var(--neon-blue);
+            border-radius: 14px;
+            padding: 14px 18px;
+            min-width: 180px;
+            z-index: 50;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.7);
+            display: none;
+            pointer-events: none;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        .point-detail-popup .date {
+            font-weight: 800;
+            font-size: 0.85rem;
+            color: var(--neon-blue);
+            margin-bottom: 4px;
+        }
+        .point-detail-popup .row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            padding: 2px 0;
+        }
+        .point-detail-popup .row .val {
+            color: var(--text-main);
+        }
+        .point-detail-popup .row .val.green {
+            color: var(--neon-green);
+        }
+        .point-detail-popup .row .val.blue {
+            color: var(--neon-blue);
         }
 
         @media (max-width: 500px) {
@@ -1083,10 +1164,30 @@
             }
             .graph-card {
                 padding: 12px 8px;
-                min-height: 280px;
+                min-height: 260px;
             }
             .graph-stat-item .num {
                 font-size: 0.95rem;
+            }
+            .graph-subject-filter {
+                gap: 5px;
+            }
+            .subj-filter-btn {
+                padding: 4px 12px;
+                font-size: 0.7rem;
+            }
+            .view-toggle-btn {
+                padding: 6px 14px;
+                font-size: 0.7rem;
+            }
+            .graph-view-toggle {
+                gap: 6px;
+            }
+            .subject-card-btn .sub-progress-btn {
+                font-size: 0.5rem;
+                padding: 1px 8px;
+                top: 4px;
+                right: 4px;
             }
         }
     </style>
@@ -1099,7 +1200,6 @@
             <div class="brand-title">REVISION CENTRE</div>
         </div>
         <div class="nav-right-controls">
-            <!-- NEW: Graph Button -->
             <button class="graph-btn" onclick="openGraphPage()" title="Progress Graph">
                 <i class="fa-solid fa-chart-line"></i>
             </button>
@@ -1165,7 +1265,6 @@
                         <div class="label">Today's Rev</div>
                     </div>
                 </div>
-
                 <div class="stats-grid">
                     <div class="stat-box">
                         <span><i class="fa-solid fa-list-check"></i> Due Today</span>
@@ -1181,7 +1280,6 @@
                     </div>
                 </div>
             </div>
-
             <div class="subjects-progress">
                 <div class="subj-item">
                     <div class="subj-header">
@@ -1252,15 +1350,24 @@
         <div class="subject-grid">
             <div class="subject-card-btn" onclick="openSubjectPage('Physics')">
                 <div class="sub-icon">⚛️</div>
-                <div class="sub-name">Physics</div>
+                <span class="sub-name">Physics</span>
+                <button class="sub-progress-btn" onclick="event.stopPropagation(); openGraphPage('Physics')">
+                    <i class="fa-solid fa-chart-line"></i> Progress
+                </button>
             </div>
             <div class="subject-card-btn" onclick="openSubjectPage('Chemistry')">
                 <div class="sub-icon">🧪</div>
-                <div class="sub-name">Chemistry</div>
+                <span class="sub-name">Chemistry</span>
+                <button class="sub-progress-btn" onclick="event.stopPropagation(); openGraphPage('Chemistry')">
+                    <i class="fa-solid fa-chart-line"></i> Progress
+                </button>
             </div>
             <div class="subject-card-btn" onclick="openSubjectPage('Maths')">
                 <div class="sub-icon">📐</div>
-                <div class="sub-name">Maths</div>
+                <span class="sub-name">Maths</span>
+                <button class="sub-progress-btn" onclick="event.stopPropagation(); openGraphPage('Maths')">
+                    <i class="fa-solid fa-chart-line"></i> Progress
+                </button>
             </div>
         </div>
     </div>
@@ -1301,7 +1408,23 @@
             <div style="width:50px;"></div>
         </div>
         <div class="graph-page-wrapper">
-            <!-- Filter Bar -->
+            <!-- Subject Filter -->
+            <div class="graph-subject-filter">
+                <button class="subj-filter-btn active" data-subject="all" onclick="setGraphSubject('all')">
+                    <span class="subj-icon">📊</span> All Subjects
+                </button>
+                <button class="subj-filter-btn" data-subject="Physics" onclick="setGraphSubject('Physics')">
+                    <span class="subj-icon">⚛️</span> Physics
+                </button>
+                <button class="subj-filter-btn" data-subject="Chemistry" onclick="setGraphSubject('Chemistry')">
+                    <span class="subj-icon">🧪</span> Chemistry
+                </button>
+                <button class="subj-filter-btn" data-subject="Maths" onclick="setGraphSubject('Maths')">
+                    <span class="subj-icon">📐</span> Maths
+                </button>
+            </div>
+
+            <!-- Time Filter -->
             <div class="graph-filter-bar">
                 <button class="filter-btn active" data-range="7" onclick="setGraphFilter('7')">1 Week</button>
                 <button class="filter-btn" data-range="30" onclick="setGraphFilter('30')">1 Month</button>
@@ -1315,9 +1438,29 @@
                 </div>
             </div>
 
-            <!-- Graph Card -->
-            <div class="graph-card">
+            <!-- Graph Card with popup -->
+            <div class="graph-card" id="graphCard" style="position:relative;">
                 <canvas id="progressChartCanvas"></canvas>
+                <!-- Point detail popup -->
+                <div class="point-detail-popup" id="pointDetailPopup">
+                    <div class="date" id="popupDate">—</div>
+                    <div class="row"><span>📘 Study Logs</span><span class="val green" id="popupLogs">0</span></div>
+                    <div class="row"><span>🔄 Revisions</span><span class="val blue" id="popupRevs">0</span></div>
+                    <div class="row"><span>📊 Total</span><span class="val" id="popupTotal">0</span></div>
+                </div>
+            </div>
+
+            <!-- 3 Toggle Buttons: Revision | Study Log | Combine -->
+            <div class="graph-view-toggle">
+                <button class="view-toggle-btn" id="viewBtnRev" onclick="setGraphView('rev')">
+                    <i class="fa-regular fa-clock"></i> Revision
+                </button>
+                <button class="view-toggle-btn" id="viewBtnLog" onclick="setGraphView('log')">
+                    <i class="fa-regular fa-file-lines"></i> Study Log
+                </button>
+                <button class="view-toggle-btn active-combine" id="viewBtnCombine" onclick="setGraphView('combine')">
+                    <i class="fa-regular fa-layer-group"></i> Combine
+                </button>
             </div>
 
             <!-- Stats -->
@@ -1342,12 +1485,14 @@
         </div>
     </div>
 
-    <!-- other modals -->
+    <!-- ========== SUBJECT PAGE ========== -->
     <div class="fullscreen-page" id="subjectPage">
         <div class="fullscreen-header">
             <button class="back-btn" onclick="closeSubjectPage()">← Back</button>
             <div class="brand-title" id="subjectTitle" style="font-size:1rem;">Chapters</div>
-            <div style="width:50px;"></div>
+            <button class="subject-progress-link" id="subjectProgressBtn" onclick="openSubjectGraph()">
+                <i class="fa-solid fa-chart-line"></i> Progress
+            </button>
         </div>
         <div class="sub-nav-tabs" id="chemSubTabs" style="display:none;">
             <button class="sub-tab-btn active" id="chemTabAll" onclick="switchChemSub('All')">All</button>
@@ -1358,6 +1503,7 @@
         <div id="subjectChapterList" style="flex:1;"></div>
     </div>
 
+    <!-- ========== CHAPTER PAGE ========== -->
     <div class="fullscreen-page" id="chapterPage">
         <div class="fullscreen-header">
             <button class="back-btn" onclick="closeChapterPage()">← Back</button>
@@ -1367,6 +1513,7 @@
         <div id="chapterTopicList" style="flex:1;"></div>
     </div>
 
+    <!-- ========== MODALS ========== -->
     <div class="modal-overlay" id="actionModal" onclick="closeModalOnOuter(event, 'actionModal')">
         <div class="modal-body">
             <div class="popup-title" id="actionModalTitle">Manage Item</div>
@@ -1460,7 +1607,12 @@
 
         // ====== GRAPH STATE ======
         let graphChartInstance = null;
-        let currentGraphRange = '7'; // '7', '30', '365', 'all', 'custom'
+        let currentGraphRange = '7';
+        let currentGraphSubject = 'all';
+        let currentGraphView = 'combine';
+        let graphAnimateOnRender = false; // flag to animate drawing
+        let currentCustomFrom = null;
+        let currentCustomTo = null;
 
         // ========== ALERT SETTINGS ==========
         function loadAlertSettings() {
@@ -1683,7 +1835,7 @@
             setTimeout(() => checkAndNotify(false), 2000);
         }
 
-        // ========== EXISTING FUNCTIONS ==========
+        // ========== CORE FUNCTIONS ==========
         window.addEventListener('DOMContentLoaded', () => {
             checkAndResetStreaks();
             renderRevisions();
@@ -1691,7 +1843,6 @@
             requestNotificationPermission();
             startAlertChecker();
             updateBellBadge();
-            // Set default graph date inputs
             const now = new Date();
             const from = new Date(now);
             from.setDate(now.getDate() - 7);
@@ -1928,9 +2079,8 @@
             localStorage.setItem(STORAGE_KEY, JSON.stringify(studyData));
             renderRevisions();
             updateDashboard();
-            // If graph is open, refresh it
             if (document.getElementById('graphPage').classList.contains('active')) {
-                renderGraph(currentGraphRange);
+                renderGraph(currentGraphRange, currentGraphSubject, currentGraphView);
             }
         }
 
@@ -1985,9 +2135,14 @@
             }
         }
 
+        // ========== SUBJECT PAGE ==========
         function openSubjectPage(subjName) {
             currentActiveSubject = subjName;
             document.getElementById('subjectTitle').innerText = `${subjName} Chapters`;
+            const progBtn = document.getElementById('subjectProgressBtn');
+            progBtn.innerHTML = `<i class="fa-solid fa-chart-line"></i> ${subjName} Progress`;
+            progBtn.onclick = function() { openSubjectGraph(subjName); };
+
             const chemSubTabs = document.getElementById('chemSubTabs');
             if (subjName === 'Chemistry') {
                 chemSubTabs.style.display = 'flex';
@@ -2062,6 +2217,13 @@
             `).join('');
         }
 
+        function openSubjectGraph(subj) {
+            if (!subj) subj = currentActiveSubject;
+            if (!subj) { showToast('⚠️ No subject selected.'); return; }
+            openGraphPage(subj);
+        }
+
+        // ========== ACTION MODALS ==========
         let activeTargetType = '';
         let activeTargetVal = null;
 
@@ -2187,14 +2349,29 @@
         }
 
         // ============================================================
-        // ==========  NEW: PROGRESS GRAPH FUNCTIONS  ==========
+        // ==========  GRAPH FUNCTIONS – WITH ANIMATION  ==========
         // ============================================================
 
-        function openGraphPage() {
+        function openGraphPage(prefilterSubject) {
+            if (prefilterSubject) {
+                currentGraphSubject = prefilterSubject;
+                document.querySelectorAll('.subj-filter-btn').forEach(btn => {
+                    btn.classList.toggle('active', btn.dataset.subject === prefilterSubject);
+                });
+                document.querySelector('.subj-filter-btn[data-subject="all"]').classList.remove('active');
+            } else {
+                currentGraphSubject = 'all';
+                document.querySelectorAll('.subj-filter-btn').forEach(btn => {
+                    btn.classList.toggle('active', btn.dataset.subject === 'all');
+                });
+            }
+            currentGraphView = 'combine';
+            updateViewButtons();
+            graphAnimateOnRender = true; // enable animation on open
             openFullscreenPage('graphPage');
-            // Render graph after a tiny delay to ensure canvas is visible
             setTimeout(() => {
-                renderGraph(currentGraphRange);
+                renderGraph(currentGraphRange, currentGraphSubject, currentGraphView);
+                graphAnimateOnRender = false; // reset after render
             }, 150);
         }
 
@@ -2204,19 +2381,29 @@
                 graphChartInstance.destroy();
                 graphChartInstance = null;
             }
+            document.getElementById('pointDetailPopup').style.display = 'none';
+        }
+
+        function setGraphSubject(subject) {
+            currentGraphSubject = subject;
+            document.querySelectorAll('.subj-filter-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.subject === subject);
+            });
+            graphAnimateOnRender = true;
+            renderGraph(currentGraphRange, currentGraphSubject, currentGraphView);
+            graphAnimateOnRender = false;
         }
 
         function setGraphFilter(range) {
             currentGraphRange = range;
-            // Update active button styling
             document.querySelectorAll('.filter-btn').forEach(btn => {
                 btn.classList.toggle('active', btn.dataset.range === String(range));
             });
-            // Clear custom highlight
             if (range !== 'custom') {
-                renderGraph(range);
+                graphAnimateOnRender = true;
+                renderGraph(range, currentGraphSubject, currentGraphView);
+                graphAnimateOnRender = false;
             } else {
-                // If 'custom' is clicked, treat as apply custom
                 applyCustomDateRange();
             }
         }
@@ -2232,19 +2419,56 @@
                 showToast('⚠️ "From" date must be before "To" date.');
                 return;
             }
-            // Set active state to 'custom'
+            currentCustomFrom = fromVal;
+            currentCustomTo = toVal;
             currentGraphRange = 'custom';
             document.querySelectorAll('.filter-btn').forEach(btn => {
                 btn.classList.toggle('active', btn.dataset.range === 'custom');
             });
-            renderGraph('custom', fromVal, toVal);
+            graphAnimateOnRender = true;
+            renderGraph('custom', currentGraphSubject, currentGraphView, fromVal, toVal);
+            graphAnimateOnRender = false;
         }
 
-        function renderGraph(range, customFrom, customTo) {
+        function setGraphView(view) {
+            currentGraphView = view;
+            updateViewButtons();
+            graphAnimateOnRender = true;
+            renderGraph(currentGraphRange, currentGraphSubject, currentGraphView);
+            graphAnimateOnRender = false;
+        }
+
+        function updateViewButtons() {
+            const btnRev = document.getElementById('viewBtnRev');
+            const btnLog = document.getElementById('viewBtnLog');
+            const btnCombine = document.getElementById('viewBtnCombine');
+            [btnRev, btnLog, btnCombine].forEach(b => {
+                b.className = 'view-toggle-btn';
+            });
+            if (currentGraphView === 'rev') {
+                btnRev.classList.add('active-rev');
+            } else if (currentGraphView === 'log') {
+                btnLog.classList.add('active-log');
+            } else {
+                btnCombine.classList.add('active-combine');
+            }
+        }
+
+        // ---- Main render with animation flag ----
+        function renderGraph(range, subject, view, customFrom, customTo) {
             const canvas = document.getElementById('progressChartCanvas');
             if (!canvas) return;
 
-            // Compute date range
+            let filteredData = studyData;
+            if (subject !== 'all') {
+                filteredData = studyData.filter(item => {
+                    if (subject === 'Chemistry') {
+                        return item.subject.startsWith('Chemistry');
+                    }
+                    return item.subject === subject;
+                });
+            }
+
             let fromDate, toDate = new Date();
             const today = new Date();
 
@@ -2252,9 +2476,8 @@
                 fromDate = new Date(customFrom);
                 toDate = new Date(customTo);
             } else if (range === 'all') {
-                // Find earliest date in data
                 let earliest = null;
-                studyData.forEach(item => {
+                filteredData.forEach(item => {
                     if (item.dateAdded) {
                         const d = new Date(item.dateAdded);
                         if (!earliest || d < earliest) earliest = d;
@@ -2283,12 +2506,9 @@
                 toDate.setDate(toDate.getDate() + 1);
             }
 
-            // Build daily data
             const dateMap = new Map();
             const start = new Date(fromDate);
             const end = new Date(toDate);
-
-            // Initialize all days in range with 0
             let current = new Date(start);
             while (current <= end) {
                 const key = getFormattedDate(current);
@@ -2296,44 +2516,34 @@
                 current.setDate(current.getDate() + 1);
             }
 
-            // Count study logs
-            studyData.forEach(item => {
+            filteredData.forEach(item => {
                 if (item.dateAdded) {
                     const d = new Date(item.dateAdded);
                     if (d >= start && d <= end) {
                         const key = getFormattedDate(d);
-                        if (dateMap.has(key)) {
-                            dateMap.get(key).logs += 1;
-                        } else {
-                            // If outside range but within custom, add it
-                            // (should not happen with initialization)
-                        }
+                        if (dateMap.has(key)) dateMap.get(key).logs += 1;
                     }
                 }
             });
 
-            // Count completed revisions
-            studyData.forEach(item => {
+            filteredData.forEach(item => {
                 item.revisions.forEach(rev => {
                     if (rev.completed && rev.date) {
                         const d = new Date(rev.date);
                         if (d >= start && d <= end) {
                             const key = getFormattedDate(d);
-                            if (dateMap.has(key)) {
-                                dateMap.get(key).revs += 1;
-                            }
+                            if (dateMap.has(key)) dateMap.get(key).revs += 1;
                         }
                     }
                 });
             });
 
-            // Sort dates
             const sortedDates = Array.from(dateMap.keys()).sort();
             const labels = sortedDates;
             const logData = sortedDates.map(d => dateMap.get(d).logs);
             const revData = sortedDates.map(d => dateMap.get(d).revs);
 
-            // Compute stats
+            // Stats
             const totalLogs = logData.reduce((a, b) => a + b, 0);
             const totalRevs = revData.reduce((a, b) => a + b, 0);
             const activeDays = logData.filter(v => v > 0).length + revData.filter(v => v > 0).length;
@@ -2344,87 +2554,91 @@
             document.getElementById('graphActiveDays').innerText = activeDays;
             document.getElementById('graphBestDay').innerText = bestDay;
 
-            // If no data, show empty message
+            // Empty state
             if (totalLogs === 0 && totalRevs === 0) {
-                // Clear chart or show empty
                 if (graphChartInstance) {
                     graphChartInstance.destroy();
                     graphChartInstance = null;
                 }
                 const ctx = canvas.getContext('2d');
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
-                // Show message overlay
                 const parent = canvas.parentElement;
                 let emptyMsg = parent.querySelector('.graph-empty-msg');
                 if (!emptyMsg) {
                     emptyMsg = document.createElement('div');
                     emptyMsg.className = 'graph-empty-msg';
-                    emptyMsg.innerHTML = `<i class="fa-regular fa-chart-bar"></i><span>No activity data to show.<br>Start logging your study sessions!</span>`;
+                    emptyMsg.innerHTML =
+                        `<i class="fa-regular fa-chart-bar"></i><span>No activity data to show.<br>Start logging your study sessions!</span>`;
                     parent.style.position = 'relative';
                     parent.appendChild(emptyMsg);
                 }
                 emptyMsg.style.display = 'flex';
                 canvas.style.display = 'none';
+                document.getElementById('pointDetailPopup').style.display = 'none';
                 return;
             } else {
-                // Hide empty message
                 const parent = canvas.parentElement;
                 const emptyMsg = parent.querySelector('.graph-empty-msg');
                 if (emptyMsg) emptyMsg.style.display = 'none';
                 canvas.style.display = 'block';
             }
 
-            // Build chart
             const ctx = canvas.getContext('2d');
-
             if (graphChartInstance) {
                 graphChartInstance.destroy();
                 graphChartInstance = null;
             }
 
-            const gradientLog = ctx.createLinearGradient(0, 0, 0, 300);
-            gradientLog.addColorStop(0, 'rgba(0, 255, 135, 0.4)');
-            gradientLog.addColorStop(1, 'rgba(0, 255, 135, 0.02)');
+            const subjectLabel = subject === 'all' ? 'All Subjects' : subject;
+            const datasets = [];
 
-            const gradientRev = ctx.createLinearGradient(0, 0, 0, 300);
-            gradientRev.addColorStop(0, 'rgba(56, 189, 248, 0.4)');
-            gradientRev.addColorStop(1, 'rgba(56, 189, 248, 0.02)');
+            if (view === 'combine' || view === 'log') {
+                datasets.push({
+                    label: `${subjectLabel} – Study Logs`,
+                    data: logData,
+                    borderColor: '#00ff87',
+                    backgroundColor: 'rgba(0, 255, 135, 0.08)',
+                    fill: true,
+                    tension: 0.3,
+                    pointBackgroundColor: '#00ff87',
+                    pointBorderColor: '#0b1120',
+                    pointBorderWidth: 1,
+                    pointRadius: 3,
+                    pointHoverRadius: 6,
+                    borderWidth: 2,
+                });
+            }
+
+            if (view === 'combine' || view === 'rev') {
+                datasets.push({
+                    label: `${subjectLabel} – Revisions Done`,
+                    data: revData,
+                    borderColor: '#38bdf8',
+                    backgroundColor: 'rgba(56, 189, 248, 0.08)',
+                    fill: true,
+                    tension: 0.3,
+                    pointBackgroundColor: '#38bdf8',
+                    pointBorderColor: '#0b1120',
+                    pointBorderWidth: 1,
+                    pointRadius: 3,
+                    pointHoverRadius: 6,
+                    borderWidth: 2,
+                });
+            }
+
+            // Build chart with animation if flag is true
+            const animationDuration = graphAnimateOnRender ? 1500 : 0;
 
             graphChartInstance = new Chart(ctx, {
                 type: 'line',
-                data: {
-                    labels: labels,
-                    datasets: [{
-                        label: 'Study Logs',
-                        data: logData,
-                        borderColor: '#00ff87',
-                        backgroundColor: gradientLog,
-                        fill: true,
-                        tension: 0.3,
-                        pointBackgroundColor: '#00ff87',
-                        pointBorderColor: '#0b1120',
-                        pointBorderWidth: 1.5,
-                        pointRadius: 3,
-                        pointHoverRadius: 6,
-                        borderWidth: 2.5,
-                    }, {
-                        label: 'Revisions Done',
-                        data: revData,
-                        borderColor: '#38bdf8',
-                        backgroundColor: gradientRev,
-                        fill: true,
-                        tension: 0.3,
-                        pointBackgroundColor: '#38bdf8',
-                        pointBorderColor: '#0b1120',
-                        pointBorderWidth: 1.5,
-                        pointRadius: 3,
-                        pointHoverRadius: 6,
-                        borderWidth: 2.5,
-                    }]
-                },
+                data: { labels, datasets },
                 options: {
                     responsive: true,
                     maintainAspectRatio: true,
+                    animation: {
+                        duration: animationDuration,
+                        easing: 'easeOutQuart',
+                    },
                     plugins: {
                         legend: {
                             labels: {
@@ -2433,10 +2647,12 @@
                                 boxWidth: 12,
                                 boxHeight: 12,
                                 padding: 16,
+                                usePointStyle: true,
+                                pointStyle: 'circle',
                             }
                         },
                         tooltip: {
-                            backgroundColor: 'rgba(15, 23, 42, 0.9)',
+                            backgroundColor: 'rgba(15, 23, 42, 0.92)',
                             borderColor: '#2a374e',
                             borderWidth: 1,
                             titleColor: '#f8fafc',
@@ -2454,28 +2670,24 @@
                     },
                     scales: {
                         x: {
-                            grid: {
-                                color: 'rgba(255,255,255,0.04)',
-                                drawBorder: false,
-                            },
+                            grid: { color: 'rgba(255,255,255,0.04)', drawBorder: false },
                             ticks: {
                                 color: '#64748b',
                                 font: { size: 9, weight: '600' },
                                 maxTicksLimit: 20,
                                 autoSkip: true,
+                                callback: function(value, index, ticks) {
+                                    if (index === 0 || index === ticks.length - 1) {
+                                        return this.getLabelForValue(value);
+                                    }
+                                    return '';
+                                }
                             }
                         },
                         y: {
-                            grid: {
-                                color: 'rgba(255,255,255,0.04)',
-                                drawBorder: false,
-                            },
-                            ticks: {
-                                color: '#64748b',
-                                font: { size: 10, weight: '600' },
-                                stepSize: 1,
-                                beginAtZero: true,
-                            },
+                            grid: { color: 'rgba(255,255,255,0.04)', drawBorder: false },
+                            ticks: { color: '#64748b', font: { size: 10, weight: '600' }, stepSize: 1,
+                            beginAtZero: true },
                             beginAtZero: true,
                         }
                     },
@@ -2483,10 +2695,52 @@
                         intersect: false,
                         mode: 'index',
                     },
+                    onClick: function(e, elements) {
+                        // If clicking on a data point, show popup
+                        if (elements.length > 0) {
+                            const el = elements[0];
+                            const index = el.index;
+                            const date = labels[index];
+                            const logs = logData[index] || 0;
+                            const revs = revData[index] || 0;
+                            const total = logs + revs;
+
+                            if (total === 0) {
+                                document.getElementById('pointDetailPopup').style.display = 'none';
+                                return;
+                            }
+
+                            document.getElementById('popupDate').innerText = date;
+                            document.getElementById('popupLogs').innerText = logs;
+                            document.getElementById('popupRevs').innerText = revs;
+                            document.getElementById('popupTotal').innerText = total;
+
+                            const popup = document.getElementById('pointDetailPopup');
+                            const rect = canvas.getBoundingClientRect();
+                            const clickX = e.clientX - rect.left;
+                            const clickY = e.clientY - rect.top;
+                            popup.style.left = '50%';
+                            popup.style.top = (clickY - 60) + 'px';
+                            popup.style.transform = 'translateX(-50%)';
+                            popup.style.display = 'block';
+                            return;
+                        }
+
+                        // If clicking on empty area, re‑animate the graph (if chart exists)
+                        if (graphChartInstance) {
+                            // Set flag to animate and re-render
+                            graphAnimateOnRender = true;
+                            renderGraph(currentGraphRange, currentGraphSubject, currentGraphView);
+                            graphAnimateOnRender = false;
+                        }
+                    }
                 }
             });
 
-            // Re-draw on resize
+            canvas.onmouseleave = function() {
+                document.getElementById('pointDetailPopup').style.display = 'none';
+            };
+
             const resizeHandler = () => {
                 if (graphChartInstance) {
                     graphChartInstance.resize();
@@ -2495,10 +2749,6 @@
             window.removeEventListener('resize', resizeHandler);
             window.addEventListener('resize', resizeHandler);
         }
-
-        // ============================================================
-        // ==========  END: GRAPH FUNCTIONS  ==========
-        // ============================================================
     </script>
 </body>
 </html>
