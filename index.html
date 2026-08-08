@@ -6,6 +6,9 @@
     <title>PrepTracker Pro - Revision Centre</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js">
+    </script>
     <style>
         /* ====== All existing styles remain exactly the same ====== */
         :root {
@@ -131,6 +134,22 @@
         }
         .notif-bell .badge.show {
             display: inline-block;
+        }
+
+        /* ====== NEW: Graph button in navbar ====== */
+        .graph-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            font-size: 1.3rem;
+            cursor: pointer;
+            transition: var(--transition-smooth);
+            padding: 4px 6px;
+            border-radius: 8px;
+        }
+        .graph-btn:hover {
+            color: var(--neon-green);
+            background: rgba(0, 255, 136, 0.08);
         }
 
         .sidebar-overlay {
@@ -897,7 +916,6 @@
             border-color: var(--neon-blue);
         }
 
-        /* Time input - make clock icon visible */
         #alertTimeInput {
             color: var(--neon-blue);
             background: var(--input-bg);
@@ -911,14 +929,165 @@
             filter: invert(1) brightness(1.5);
             cursor: pointer;
         }
-        /* For Firefox (partial support) */
         #alertTimeInput::-moz-calendar-picker-indicator {
             filter: invert(1) brightness(1.5);
             cursor: pointer;
         }
-        /* For Edge/Chromium fallback */
         #alertTimeInput::-webkit-datetime-edit {
             color: var(--neon-blue);
+        }
+
+        /* ====== NEW: Graph Page Styles ====== */
+        .graph-page-wrapper {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .graph-filter-bar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 18px;
+            align-items: center;
+        }
+
+        .filter-btn {
+            padding: 8px 16px;
+            border-radius: 20px;
+            border: 1px solid var(--card-border);
+            background: var(--card-bg);
+            color: var(--text-muted);
+            font-weight: 700;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: var(--transition-smooth);
+        }
+        .filter-btn:hover {
+            border-color: var(--neon-blue);
+            color: var(--text-main);
+        }
+        .filter-btn.active {
+            background: rgba(56, 189, 248, 0.15);
+            border-color: var(--neon-blue);
+            color: var(--neon-blue);
+        }
+
+        .custom-date-range {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-left: 4px;
+        }
+        .custom-date-range input[type="date"] {
+            padding: 6px 10px;
+            background: var(--input-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 10px;
+            color: var(--text-main);
+            font-weight: 600;
+            font-size: 0.8rem;
+            width: 140px;
+        }
+        .custom-date-range input[type="date"]::-webkit-calendar-picker-indicator {
+            filter: invert(1) brightness(1.5);
+            cursor: pointer;
+        }
+        .custom-date-range .apply-btn {
+            padding: 6px 16px;
+            background: var(--neon-blue);
+            border: none;
+            border-radius: 10px;
+            color: #05100a;
+            font-weight: 800;
+            font-size: 0.8rem;
+            cursor: pointer;
+        }
+        .custom-date-range .apply-btn:hover {
+            opacity: 0.85;
+        }
+
+        .graph-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 18px;
+            padding: 20px 16px 16px 16px;
+            flex: 1;
+            min-height: 350px;
+            position: relative;
+        }
+        .graph-card canvas {
+            width: 100% !important;
+            max-height: 420px;
+        }
+
+        .graph-stats-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+            margin-top: 16px;
+            padding-top: 14px;
+            border-top: 1px solid rgba(255, 255, 255, 0.06);
+            justify-content: space-around;
+        }
+        .graph-stat-item {
+            text-align: center;
+        }
+        .graph-stat-item .num {
+            font-size: 1.1rem;
+            font-weight: 800;
+            color: var(--neon-green);
+        }
+        .graph-stat-item .label {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+        .graph-stat-item .num.rev-num {
+            color: var(--neon-blue);
+        }
+
+        .graph-empty-msg {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 280px;
+            color: var(--text-muted);
+            font-weight: 700;
+            gap: 10px;
+        }
+        .graph-empty-msg i {
+            font-size: 3rem;
+            opacity: 0.3;
+        }
+
+        @media (max-width: 500px) {
+            .graph-filter-bar {
+                gap: 6px;
+            }
+            .filter-btn {
+                padding: 6px 12px;
+                font-size: 0.7rem;
+            }
+            .custom-date-range input[type="date"] {
+                width: 110px;
+                font-size: 0.7rem;
+                padding: 5px 8px;
+            }
+            .custom-date-range .apply-btn {
+                padding: 5px 12px;
+                font-size: 0.7rem;
+            }
+            .graph-card {
+                padding: 12px 8px;
+                min-height: 280px;
+            }
+            .graph-stat-item .num {
+                font-size: 0.95rem;
+            }
         }
     </style>
 </head>
@@ -930,6 +1099,10 @@
             <div class="brand-title">REVISION CENTRE</div>
         </div>
         <div class="nav-right-controls">
+            <!-- NEW: Graph Button -->
+            <button class="graph-btn" onclick="openGraphPage()" title="Progress Graph">
+                <i class="fa-solid fa-chart-line"></i>
+            </button>
             <button class="notif-bell" id="notifBell" onclick="manualCheck()" title="Check pending revisions">
                 <i class="fa-regular fa-bell"></i>
                 <span class="badge" id="notifBadge">0</span>
@@ -942,13 +1115,14 @@
 
     <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
     <div class="sidebar" id="sidebar">
-        <h3 style="color:var(--neon-blue); font-size: 1.1rem; font-weight:800;">⚡ Navigation Menu</h3>
+        <h3 style="color:var(--neon-blue); font-size:1.1rem; font-weight:800;">⚡ Navigation Menu</h3>
         <ul class="sidebar-links">
             <li><a href="#" onclick="toggleSidebar()">🏠 Home</a></li>
             <li><a href="#" onclick="openSubjectPage('Physics'); toggleSidebar();">⚛️ Physics</a></li>
             <li><a href="#" onclick="openSubjectPage('Chemistry'); toggleSidebar();">🧪 Chemistry</a></li>
             <li><a href="#" onclick="openSubjectPage('Maths'); toggleSidebar();">📐 Maths</a></li>
             <div class="sidebar-divider"></div>
+            <li><a href="#" onclick="openGraphPage(); toggleSidebar();">📊 Progress Graph</a></li>
             <li><a href="#" onclick="openAlertSettings(); toggleSidebar();">🔔 Alert Settings</a></li>
             <div class="sidebar-divider"></div>
             <li>
@@ -1091,7 +1265,7 @@
         </div>
     </div>
 
-    <!-- ========== ALERT SETTINGS MODAL (UPDATED) ========== -->
+    <!-- ========== ALERT SETTINGS MODAL ========== -->
     <div class="modal-overlay" id="alertSettingsModal" onclick="closeModalOnOuter(event, 'alertSettingsModal')">
         <div class="modal-body">
             <div class="popup-title">🔔 Alert Settings</div>
@@ -1115,6 +1289,55 @@
             <div class="popup-actions">
                 <button class="popup-btn cancel" onclick="closeModal('alertSettingsModal')">Cancel</button>
                 <button class="popup-btn edit" id="btnSaveAlertSettings">💾 Save Settings</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========== PROGRESS GRAPH FULLSCREEN PAGE ========== -->
+    <div class="fullscreen-page" id="graphPage">
+        <div class="fullscreen-header">
+            <button class="back-btn" onclick="closeGraphPage()">← Back</button>
+            <div class="brand-title" style="font-size:1rem;">📊 Progress Graph</div>
+            <div style="width:50px;"></div>
+        </div>
+        <div class="graph-page-wrapper">
+            <!-- Filter Bar -->
+            <div class="graph-filter-bar">
+                <button class="filter-btn active" data-range="7" onclick="setGraphFilter('7')">1 Week</button>
+                <button class="filter-btn" data-range="30" onclick="setGraphFilter('30')">1 Month</button>
+                <button class="filter-btn" data-range="365" onclick="setGraphFilter('365')">1 Year</button>
+                <button class="filter-btn" data-range="all" onclick="setGraphFilter('all')">All</button>
+                <div class="custom-date-range">
+                    <input type="date" id="graphDateFrom" />
+                    <span style="color:var(--text-muted); font-size:0.7rem;">→</span>
+                    <input type="date" id="graphDateTo" />
+                    <button class="apply-btn" onclick="applyCustomDateRange()">Apply</button>
+                </div>
+            </div>
+
+            <!-- Graph Card -->
+            <div class="graph-card">
+                <canvas id="progressChartCanvas"></canvas>
+            </div>
+
+            <!-- Stats -->
+            <div class="graph-stats-row">
+                <div class="graph-stat-item">
+                    <div class="num" id="graphTotalLogs">0</div>
+                    <div class="label">Total Study Logs</div>
+                </div>
+                <div class="graph-stat-item">
+                    <div class="num rev-num" id="graphTotalRevs">0</div>
+                    <div class="label">Total Revisions Done</div>
+                </div>
+                <div class="graph-stat-item">
+                    <div class="num" id="graphActiveDays">0</div>
+                    <div class="label">Active Days</div>
+                </div>
+                <div class="graph-stat-item">
+                    <div class="num rev-num" id="graphBestDay">0</div>
+                    <div class="label">Best Day (logs)</div>
+                </div>
             </div>
         </div>
     </div>
@@ -1235,6 +1458,10 @@
         let currentActiveChapter = '';
         let alertDismissed = false;
 
+        // ====== GRAPH STATE ======
+        let graphChartInstance = null;
+        let currentGraphRange = '7'; // '7', '30', '365', 'all', 'custom'
+
         // ========== ALERT SETTINGS ==========
         function loadAlertSettings() {
             const defaultSettings = { sound: 'default', time: '22:00' };
@@ -1261,7 +1488,6 @@
             openModal('alertSettingsModal');
         }
 
-        // Preview sound
         function previewSound() {
             const sound = document.getElementById('alertSoundSelect').value;
             playAlertSound(sound);
@@ -1300,7 +1526,7 @@
                     currentAudioContext = null;
                 }
 
-                const ctx = new (window.AudioContext || window.webkitAudioContext)();
+                const ctx = new(window.AudioContext || window.webkitAudioContext)();
                 currentAudioContext = ctx;
 
                 const gain = ctx.createGain();
@@ -1465,6 +1691,12 @@
             requestNotificationPermission();
             startAlertChecker();
             updateBellBadge();
+            // Set default graph date inputs
+            const now = new Date();
+            const from = new Date(now);
+            from.setDate(now.getDate() - 7);
+            document.getElementById('graphDateFrom').value = getFormattedDate(from);
+            document.getElementById('graphDateTo').value = getFormattedDate(now);
         });
 
         function requestNotificationPermission() {
@@ -1696,6 +1928,10 @@
             localStorage.setItem(STORAGE_KEY, JSON.stringify(studyData));
             renderRevisions();
             updateDashboard();
+            // If graph is open, refresh it
+            if (document.getElementById('graphPage').classList.contains('active')) {
+                renderGraph(currentGraphRange);
+            }
         }
 
         function renderRevisions() {
@@ -1949,6 +2185,320 @@
             toast.classList.add('show');
             setTimeout(() => toast.classList.remove('show'), 2000);
         }
+
+        // ============================================================
+        // ==========  NEW: PROGRESS GRAPH FUNCTIONS  ==========
+        // ============================================================
+
+        function openGraphPage() {
+            openFullscreenPage('graphPage');
+            // Render graph after a tiny delay to ensure canvas is visible
+            setTimeout(() => {
+                renderGraph(currentGraphRange);
+            }, 150);
+        }
+
+        function closeGraphPage() {
+            closeFullscreenPage('graphPage');
+            if (graphChartInstance) {
+                graphChartInstance.destroy();
+                graphChartInstance = null;
+            }
+        }
+
+        function setGraphFilter(range) {
+            currentGraphRange = range;
+            // Update active button styling
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.range === String(range));
+            });
+            // Clear custom highlight
+            if (range !== 'custom') {
+                renderGraph(range);
+            } else {
+                // If 'custom' is clicked, treat as apply custom
+                applyCustomDateRange();
+            }
+        }
+
+        function applyCustomDateRange() {
+            const fromVal = document.getElementById('graphDateFrom').value;
+            const toVal = document.getElementById('graphDateTo').value;
+            if (!fromVal || !toVal) {
+                showToast('⚠️ Please select both from and to dates.');
+                return;
+            }
+            if (fromVal > toVal) {
+                showToast('⚠️ "From" date must be before "To" date.');
+                return;
+            }
+            // Set active state to 'custom'
+            currentGraphRange = 'custom';
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.range === 'custom');
+            });
+            renderGraph('custom', fromVal, toVal);
+        }
+
+        function renderGraph(range, customFrom, customTo) {
+            const canvas = document.getElementById('progressChartCanvas');
+            if (!canvas) return;
+
+            // Compute date range
+            let fromDate, toDate = new Date();
+            const today = new Date();
+
+            if (range === 'custom' && customFrom && customTo) {
+                fromDate = new Date(customFrom);
+                toDate = new Date(customTo);
+            } else if (range === 'all') {
+                // Find earliest date in data
+                let earliest = null;
+                studyData.forEach(item => {
+                    if (item.dateAdded) {
+                        const d = new Date(item.dateAdded);
+                        if (!earliest || d < earliest) earliest = d;
+                    }
+                    item.revisions.forEach(rev => {
+                        if (rev.completed && rev.date) {
+                            const d = new Date(rev.date);
+                            if (!earliest || d < earliest) earliest = d;
+                        }
+                    });
+                });
+                if (!earliest) {
+                    fromDate = new Date(today);
+                    fromDate.setDate(today.getDate() - 7);
+                } else {
+                    fromDate = new Date(earliest);
+                    fromDate.setDate(fromDate.getDate() - 1);
+                }
+                toDate = new Date(today);
+                toDate.setDate(toDate.getDate() + 1);
+            } else {
+                const days = parseInt(range);
+                fromDate = new Date(today);
+                fromDate.setDate(today.getDate() - days);
+                toDate = new Date(today);
+                toDate.setDate(toDate.getDate() + 1);
+            }
+
+            // Build daily data
+            const dateMap = new Map();
+            const start = new Date(fromDate);
+            const end = new Date(toDate);
+
+            // Initialize all days in range with 0
+            let current = new Date(start);
+            while (current <= end) {
+                const key = getFormattedDate(current);
+                dateMap.set(key, { logs: 0, revs: 0 });
+                current.setDate(current.getDate() + 1);
+            }
+
+            // Count study logs
+            studyData.forEach(item => {
+                if (item.dateAdded) {
+                    const d = new Date(item.dateAdded);
+                    if (d >= start && d <= end) {
+                        const key = getFormattedDate(d);
+                        if (dateMap.has(key)) {
+                            dateMap.get(key).logs += 1;
+                        } else {
+                            // If outside range but within custom, add it
+                            // (should not happen with initialization)
+                        }
+                    }
+                }
+            });
+
+            // Count completed revisions
+            studyData.forEach(item => {
+                item.revisions.forEach(rev => {
+                    if (rev.completed && rev.date) {
+                        const d = new Date(rev.date);
+                        if (d >= start && d <= end) {
+                            const key = getFormattedDate(d);
+                            if (dateMap.has(key)) {
+                                dateMap.get(key).revs += 1;
+                            }
+                        }
+                    }
+                });
+            });
+
+            // Sort dates
+            const sortedDates = Array.from(dateMap.keys()).sort();
+            const labels = sortedDates;
+            const logData = sortedDates.map(d => dateMap.get(d).logs);
+            const revData = sortedDates.map(d => dateMap.get(d).revs);
+
+            // Compute stats
+            const totalLogs = logData.reduce((a, b) => a + b, 0);
+            const totalRevs = revData.reduce((a, b) => a + b, 0);
+            const activeDays = logData.filter(v => v > 0).length + revData.filter(v => v > 0).length;
+            const bestDay = Math.max(...logData, 0);
+
+            document.getElementById('graphTotalLogs').innerText = totalLogs;
+            document.getElementById('graphTotalRevs').innerText = totalRevs;
+            document.getElementById('graphActiveDays').innerText = activeDays;
+            document.getElementById('graphBestDay').innerText = bestDay;
+
+            // If no data, show empty message
+            if (totalLogs === 0 && totalRevs === 0) {
+                // Clear chart or show empty
+                if (graphChartInstance) {
+                    graphChartInstance.destroy();
+                    graphChartInstance = null;
+                }
+                const ctx = canvas.getContext('2d');
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                // Show message overlay
+                const parent = canvas.parentElement;
+                let emptyMsg = parent.querySelector('.graph-empty-msg');
+                if (!emptyMsg) {
+                    emptyMsg = document.createElement('div');
+                    emptyMsg.className = 'graph-empty-msg';
+                    emptyMsg.innerHTML = `<i class="fa-regular fa-chart-bar"></i><span>No activity data to show.<br>Start logging your study sessions!</span>`;
+                    parent.style.position = 'relative';
+                    parent.appendChild(emptyMsg);
+                }
+                emptyMsg.style.display = 'flex';
+                canvas.style.display = 'none';
+                return;
+            } else {
+                // Hide empty message
+                const parent = canvas.parentElement;
+                const emptyMsg = parent.querySelector('.graph-empty-msg');
+                if (emptyMsg) emptyMsg.style.display = 'none';
+                canvas.style.display = 'block';
+            }
+
+            // Build chart
+            const ctx = canvas.getContext('2d');
+
+            if (graphChartInstance) {
+                graphChartInstance.destroy();
+                graphChartInstance = null;
+            }
+
+            const gradientLog = ctx.createLinearGradient(0, 0, 0, 300);
+            gradientLog.addColorStop(0, 'rgba(0, 255, 135, 0.4)');
+            gradientLog.addColorStop(1, 'rgba(0, 255, 135, 0.02)');
+
+            const gradientRev = ctx.createLinearGradient(0, 0, 0, 300);
+            gradientRev.addColorStop(0, 'rgba(56, 189, 248, 0.4)');
+            gradientRev.addColorStop(1, 'rgba(56, 189, 248, 0.02)');
+
+            graphChartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Study Logs',
+                        data: logData,
+                        borderColor: '#00ff87',
+                        backgroundColor: gradientLog,
+                        fill: true,
+                        tension: 0.3,
+                        pointBackgroundColor: '#00ff87',
+                        pointBorderColor: '#0b1120',
+                        pointBorderWidth: 1.5,
+                        pointRadius: 3,
+                        pointHoverRadius: 6,
+                        borderWidth: 2.5,
+                    }, {
+                        label: 'Revisions Done',
+                        data: revData,
+                        borderColor: '#38bdf8',
+                        backgroundColor: gradientRev,
+                        fill: true,
+                        tension: 0.3,
+                        pointBackgroundColor: '#38bdf8',
+                        pointBorderColor: '#0b1120',
+                        pointBorderWidth: 1.5,
+                        pointRadius: 3,
+                        pointHoverRadius: 6,
+                        borderWidth: 2.5,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: {
+                        legend: {
+                            labels: {
+                                color: '#94a3b8',
+                                font: { weight: '700', size: 11, family: "'Plus Jakarta Sans', sans-serif" },
+                                boxWidth: 12,
+                                boxHeight: 12,
+                                padding: 16,
+                            }
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(15, 23, 42, 0.9)',
+                            borderColor: '#2a374e',
+                            borderWidth: 1,
+                            titleColor: '#f8fafc',
+                            bodyColor: '#94a3b8',
+                            cornerRadius: 10,
+                            padding: 12,
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    let val = context.parsed.y;
+                                    return `${label}: ${val} ${val === 1 ? 'entry' : 'entries'}`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: {
+                                color: 'rgba(255,255,255,0.04)',
+                                drawBorder: false,
+                            },
+                            ticks: {
+                                color: '#64748b',
+                                font: { size: 9, weight: '600' },
+                                maxTicksLimit: 20,
+                                autoSkip: true,
+                            }
+                        },
+                        y: {
+                            grid: {
+                                color: 'rgba(255,255,255,0.04)',
+                                drawBorder: false,
+                            },
+                            ticks: {
+                                color: '#64748b',
+                                font: { size: 10, weight: '600' },
+                                stepSize: 1,
+                                beginAtZero: true,
+                            },
+                            beginAtZero: true,
+                        }
+                    },
+                    interaction: {
+                        intersect: false,
+                        mode: 'index',
+                    },
+                }
+            });
+
+            // Re-draw on resize
+            const resizeHandler = () => {
+                if (graphChartInstance) {
+                    graphChartInstance.resize();
+                }
+            };
+            window.removeEventListener('resize', resizeHandler);
+            window.addEventListener('resize', resizeHandler);
+        }
+
+        // ============================================================
+        // ==========  END: GRAPH FUNCTIONS  ==========
+        // ============================================================
     </script>
 </body>
 </html>
