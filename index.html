@@ -164,6 +164,27 @@ body{
   animation:textIn .8s 1.1s both;
 }
 
+#splash .skip-hint{
+  margin-top:12px;
+  color:#64748b;
+  font-size:10px;
+  font-weight:800;
+  letter-spacing:.08em;
+  opacity:.82;
+  animation:skipHintIn .8s 1.35s both, skipPulse 2s 2.2s ease-in-out infinite;
+  user-select:none;
+  -webkit-user-select:none;
+  pointer-events:none;
+}
+@keyframes skipHintIn{
+  from{opacity:0;transform:translateY(6px)}
+  to{opacity:.82;transform:none}
+}
+@keyframes skipPulse{
+  0%,100%{opacity:.65}
+  50%{opacity:1}
+}
+
 @media(max-width:600px){
   #splash .logo{width:86px;height:86px;border-radius:25px;margin:22px auto 20px}
   #splash .clock{width:45px;height:45px}
@@ -727,6 +748,7 @@ body::after {
   display: flex;
   width: 200%;
   transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  will-change: transform;
 }
 .slide-panel { width: 50%; padding: 22px; }
 #revisionList { max-height: 420px; overflow-y: auto; padding-right: 4px; }
@@ -1628,6 +1650,7 @@ footer {
 
     <div class="loading"><span></span></div>
     <div class="footer">PREPARING YOUR REVISION SPACE</div>
+    <div class="skip-hint">DOUBLE-TAP ANYWHERE TO SKIP</div>
   </section>
 </div>
 
@@ -2031,23 +2054,58 @@ footer {
 
   // Total welcome animation time (same as loading bar: 4.1s + small buffer)
   const DURATION = 4300;
+  let splashFinished = false;
+  let splashTimer = null;
+  let removeTimer = null;
+  let initTimer = null;
+  let lastTap = 0;
 
-  setTimeout(() => {
+  function finishSplash(skipAnimation = false) {
+    if (splashFinished) return;
+    splashFinished = true;
+
+    // Stop the automatic timer so it cannot fire again after a manual skip.
+    if (splashTimer) clearTimeout(splashTimer);
+
+    // Restore page scrolling. The splash CSS intentionally locks the body while
+    // the welcome screen is active; leaving it locked would break the app slider.
+    document.documentElement.style.overflowY = 'auto';
+    document.body.style.overflowY = 'auto';
+    document.body.style.overflowX = 'hidden';
+
     splash.classList.add('hide');
     appRoot.style.display = 'block';
 
-    // Re-run app initialization after app is visible
-    setTimeout(() => {
+    // Re-run app initialization after app is visible.
+    initTimer = setTimeout(() => {
       if (typeof window.__appInit === 'function') {
         window.__appInit();
       }
-    }, 100);
+    }, skipAnimation ? 0 : 100);
 
-    // Remove splash from DOM after fade-out
-    setTimeout(() => {
-      splash.remove();
-    }, 900);
-  }, DURATION);
+    // Remove splash from DOM after fade-out.
+    removeTimer = setTimeout(() => {
+      if (splash && splash.parentNode) splash.remove();
+    }, skipAnimation ? 0 : 900);
+  }
+
+  // Normal completion after the full welcome animation.
+  splashTimer = setTimeout(() => finishSplash(false), DURATION);
+
+  // Double-tap anywhere on the welcome animation to skip it immediately.
+  splash.addEventListener('pointerup', () => {
+    const now = Date.now();
+    if (now - lastTap < 400) {
+      finishSplash(true);
+    }
+    lastTap = now;
+  }, { passive: true });
+
+  // Also support a quick double-click on desktop.
+  splash.addEventListener('dblclick', (event) => {
+    event.preventDefault();
+    finishSplash(true);
+  });
 })();
 
 /* ========== APP SCRIPT (Original Revision Centre) ========== */
