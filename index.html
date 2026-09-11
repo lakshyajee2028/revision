@@ -197,6 +197,60 @@ body{
 @media(prefers-reduced-motion:reduce){
   *,*:before,*:after{animation-duration:.01ms!important;animation-iteration-count:1!important}
 }
+
+/* ===== PERFORMANCE / CLICK-LAG FIX =====
+   Keep interactions crisp on low/mid-range devices. */
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+html, body {
+  overscroll-behavior: none;
+}
+/* Expensive backdrop blurs were causing visible redraw/buffering on clicks. */
+.dashboard-card, .card, .modal, .popup, .sidebar-overlay, .graph-modal, .theme-modal, .bottom-sheet {
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+}
+/* Prevent large animated shadows/filters from being recalculated during taps. */
+.dashboard-card::before {
+  animation: none !important;
+}
+/* Keep hover movement off touch devices; it can look like the whole UI jumps. */
+@media (hover: none) {
+  .revision-card:hover,
+  .sidebar-links a:hover,
+  .popup-btn.delete:hover,
+  .popup-btn.edit:hover,
+  .theme-option:hover,
+  .circle-check-btn:hover {
+    transform: none !important;
+  }
+}
+/* Make tab switching GPU-friendly without forcing repaint-heavy effects. */
+.slider-content {
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  transform: translateZ(0);
+}
+/* Buttons should never show browser focus movement as a layout shift. */
+button, input, select, textarea {
+  font: inherit;
+}
+button:focus-visible {
+  outline: 2px solid rgba(59,130,246,.45);
+  outline-offset: 2px;
+}
+/* Revision check: empty by default, green only while checked. */
+.circle-check-btn {
+  background: transparent !important;
+  color: transparent !important;
+}
+.circle-check-btn.checked {
+  background: var(--neon-green) !important;
+  border-color: var(--neon-green) !important;
+  color: #fff !important;
+}
+
 </style>
 
 <!-- ========== APP STYLES (Original Revision Centre) ========== -->
@@ -2758,18 +2812,38 @@ function renderRevisions() {
         <div class="revision-topics">${d.topics}</div>
         <div class="revision-date">📅 ${d.dueDate} • ${d.intervalDays}D Rev</div>
       </div>
-      <button class="circle-check-btn ${d.isLate ? 'late-btn' : ''}" onclick="completeRevision(${d.itemId}, ${d.revIndex})">✓</button>
+      <button class="circle-check-btn ${d.isLate ? 'late-btn' : ''}" onclick="completeRevision(${d.itemId}, ${d.revIndex})" aria-label="Complete revision">✓</button>
     </div>
   `).join('');
 }
 function completeRevision(itemId, revIndex) {
   const item = studyData.find(i => i.id === itemId);
-  if (item) {
-    item.revisions[revIndex].completed = true;
-    saveData();
-    updateStreaks('rev');
-    showToast("🎉 Revision complete!");
-    checkAndNotify(false);
+  if (!item || !item.revisions[revIndex]) return;
+
+  // Mark the clicked control immediately, then update data. This avoids a
+  // visible page-wide redraw on every single revision click.
+  const btn = document.querySelector(`.circle-check-btn[onclick*="completeRevision(${itemId}, ${revIndex})"]`);
+  if (btn) {
+    btn.classList.add('checked');
+    btn.disabled = true;
+  }
+
+  item.revisions[revIndex].completed = true;
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(studyData));
+  updateStreaks('rev');
+  showToast("🎉 Revision complete!");
+  checkAndNotify(false);
+
+  // Remove only the completed revision card, instead of rebuilding the entire UI.
+  if (btn) {
+    const card = btn.closest('.revision-card');
+    if (card) {
+      requestAnimationFrame(() => {
+        card.remove();
+        const revList = document.getElementById('revisionList');
+        if (revList && !revList.querySelector('.revision-card')) renderRevisions();
+      });
+    }
   }
 }
 
